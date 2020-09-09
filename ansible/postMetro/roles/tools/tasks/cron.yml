@@ -1,0 +1,17 @@
+---
+# This task install cronjobs for scripts and other tasks
+# This needs to be fixed so that parameters are auto genrated propely per deloyment
+
+- name: Set up the daily WL billing report creation
+  cron:
+    name: "run wl-billing script"
+    minute: "50"
+    hour: "23"
+    job: "/home/ec2-user/scripts/wl-billing/mainNSGRunner.py -cfg XXXX -fmt FORMAT-01"
+
+- name: Set up the daily report transfer to S3 bucket
+  cron:
+    name: "run wl-billing script"
+    minute: "10"
+    hour: "00"
+    job: "/home/ec2-user/scripts/wl-billing/s3Transfer.py -bn wl-billing-production -fn daily-reports -dn /home/ec2-user/reports -an /home/ec2-user/reports-archive/"

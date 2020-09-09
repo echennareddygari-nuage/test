@@ -1,0 +1,8 @@
+<VirtualHost _default_:8008>
+ServerName upgrade.hvns-test.com
+SSLEngine on
+SSLCertificateFile /opt/proxy/config/keys/upgradeCert.pem
+SSLCertificateKeyFile /opt/proxy/config/keys/upgrade-Key.pem
+DocumentRoot /var/www/html
+Options -Indexes
+</VirtualHost>

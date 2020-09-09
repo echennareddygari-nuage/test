@@ -1,0 +1,47 @@
+---
+# Initialize the jump host.  Install any necesary packages of config before running remaining postMetro tasks
+
+# Install and upgrade packages and binaries
+- name: Ensure all required packages for jump host are installed
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - python-boto
+    - python2-openshift
+    - python-pip
+
+- name:  Make sure the aws cli tool is upgraded to the newest version which has eks feature (at least 1.16)
+  shell: "{{ item }}"
+  with_items:
+    - pip install awscli --upgrade
+    - pip install zabbix-api
+    - pip install --upgrade ansible==2.8
+  become: yes
+
+# Set up the AWS credential file from the pre-configured variables
+- name: Creeate first line in ~/.aws/credentials file and create file is it doesn't already exist
+  lineinfile:
+    path: ~/.aws/credentials
+    regexp: '^[default]'
+    line: "[default]"
+    create: yes
+
+- name: Updating aws_access_key_id line in ~/.aws/credentials file from variable
+  lineinfile:
+    path: ~/.aws/credentials
+    regexp: '^aws_access_key_id'
+    line: aws_access_key_id = {{ aws.access_key }}
+
+- name: Updating aws_secret_access_key line in ~/.aws/credentials file from variable
+  lineinfile:
+    path: ~/.aws/credentials
+    regexp: '^aws_secret_access_key'
+    line: aws_secret_access_key = {{ aws.secret_key }}
+
+- name: Updating aws_session_token line in ~/.aws/credentials file from variable
+  lineinfile:
+    path: ~/.aws/credentials
+    regexp: '^aws_session_token'
+    line: aws_session_token = {{ aws.security_token }}

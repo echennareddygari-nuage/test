@@ -1,0 +1,93 @@
+---  
+# The following tasks upload script files or script templates 
+# required on the tools vm
+
+- name: Create necessary directories on the tools VM
+  file:
+    path: "{{ item }}"
+    state: directory 
+  with_items:
+    - /home/ec2-user/scripts/worldping
+    - /home/ec2-user/scripts/sns
+    - /home/ec2-user/scripts/vsc
+    - /home/ec2-user/scripts/pinpoint
+    - /home/ec2-user/scripts/vsd
+    - /home/ec2-user/scripts/test
+    - /home/ec2-user/scripts/wl-billing
+    - /home/ec2-user/reports
+    - /home/ec2-user/reports-archive
+    - /var/log/scripts
+
+- name: Upload the https worldping script from template file
+  template:
+    force: yes
+    src: getWPHttps.sh.j2
+    dest: /home/ec2-user/scripts/worldping/getWPHttps.sh
+    group: ec2-user
+    owner: ec2-user
+    mode: 0755
+  become: true
+
+- name: Upload the dns worldping script from template file
+  template:
+    force: yes
+    src: getWPDns.sh.j2
+    dest: /home/ec2-user/scripts/worldping/getWPDns.sh
+    group: ec2-user
+    owner: ec2-user
+    mode: 0755
+  become: true
+
+- name: Upload the aws sns text message script from template file
+  template:
+    force: yes
+    src: send-aws-sns-sms.sh.j2
+    dest: /home/ec2-user/scripts/sns/send-aws-sns-sms.sh
+    group: ec2-user
+    owner: ec2-user
+    mode: 0755
+  become: true
+
+- name: Upload the alarm test activate script
+  template:
+    force: yes
+    src: alarm_test_activate.sh.j2
+    dest: /home/ec2-user/scripts/test/alarm_test_activate.sh
+    group: ec2-user
+    owner: ec2-user
+    mode: 0755
+  become: true
+
+- name: Upload the alarm test clear script
+  template:
+    force: yes
+    src: alarm_test_clear.sh.j2
+    dest: /home/ec2-user/scripts/test/alarm_test_clear.sh
+    group: ec2-user
+    owner: ec2-user
+    mode: 0755
+  become: true
+
+- name: Upload the VSC test python script from a file
+  copy:
+    src: vsc_test.py
+    dest: /home/ec2-user/scripts/vsc/vsc_test.py
+    owner: ec2-user
+    group: ec2-user
+    mode: 0755
+
+- name: Upload the pinpoint voice call script from a file
+  copy:
+    src: send-voice-call.sh
+    dest: /home/ec2-user/scripts/pinpoint/send-voice-call.sh
+    owner: ec2-user
+    group: ec2-user
+    mode: 0755
+
+- name: Upload the pinpoint voice call script from a file
+  copy:
+    src: send-voice-call.sh
+    dest: /home/ec2-user/scripts/vsd/vsd_license_check.py
+    owner: ec2-user
+    group: ec2-user
+    mode: 0755

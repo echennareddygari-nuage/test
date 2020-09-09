@@ -1,0 +1,43 @@
+---
+# Set up ssl certs for proxy servers
+
+- name: Create a directory on proxy server
+  file:
+    path: /opt/proxy/config/keys
+    state: directory
+    mode: 0755
+  become: true
+
+- name: Copy the proxy pem files to the proxy server
+  copy:
+    src: "{{ item }}"
+    dest: /opt/proxy/config/keys
+  with_fileglob:
+    - "/home/software/certs/proxy*.pem"
+  
+- name: Copy the upgrade pem files to the proxy server
+  copy:
+    src: "{{ item }}"
+    dest: /opt/proxy/config/keys
+  with_fileglob:
+    - "/home/software/certs/upgrade*.pem"
+
+- name: Copy the BootstrapCA.pem file to proxy server
+  copy:
+    src: BootstrapCA.pem
+    dest: /opt/proxy/config/keys
+    mode: 0644
+    owner: root
+    group: root
+
+#- name: Copy a temporary self signed cert for the portal fqdn if one does not already exist
+#  copy:
+#    src: /home/software/certs/proxyCert.pem
+#    dest: /opt/proxy/config/keys/{{ public_fqdn }}.pem
+#    mode: 0644
+#    owner: root
+#    group: root
+#    force: no
+
+- debug:
+    msg: IMPORTANT -- Don't forget to update the portal certificate if we have installed a temporary one!!!

@@ -1,0 +1,104 @@
+---
+# Configure haproxy and all dependencies
+
+- name: Start and enable service haproxy, if not started
+  systemd:
+    name: rh-haproxy18-haproxy
+    state: started
+    enabled: yes
+
+- name: Creates some required directories
+  file:
+    path: "{{ item }}" 
+    state: directory
+    mode: 0755
+  with_items:
+    - /opt/proxy/bin
+    - /etc/haproxy
+
+- name: Perform a touch on the file externalCrlLocations
+  file:
+    path: "/opt/proxy/config/externalCrlLocations"
+    state: touch
+  
+- name: Download download vspca certs 
+  get_url:
+    url: https://xmpp.{{ host_domain }}:8443/web/certificaterevocationlist/vspca.pem 
+    dest: /etc/haproxy/crl.pem 
+    mode: 0644
+    validate_certs: no
+  notify: restart haproxy
+  
+#- name: Run remote command for AWS S3 sync
+#  shell: "aws s3 sync s3://nuage.files.cert/builds/5_2_3_NSG/ ."
+#  environment:
+#      AWS_SECRET_ACCESS_KEY: K44fJ1XQ7g8MR3pzr1w44NudAHWfWcbTP3lBeDLN
+#      AWS_DEFAULT_REGION: eu-west-1
+        
+#- name: Go to the folder and execute command
+#  command: chdir=/opt/proxy/config/keys ls
+
+#- name: Go to the folder and execute command
+#  shell: "aws s3 sync s3://nuage.files.cert/builds/5_2_3_NSG/ ."
+    
+#- name: Copy the directory
+#  copy:
+#    src: /opt/proxy/config/keys/crlreloader.sh
+#    dest: /opt/proxy/bin/crlreloader.sh
+#    remote_src: yes
+      
+#- name: Changing perm of "/foo/bar.sh", adding "+x"
+#  file: dest=/opt/proxy/bin/crlreloader.sh mode=a+x
+
+- name: Copy crlreloader.sh script to proxy server location
+  copy:
+    src: crlreloader.sh
+    dest: /opt/proxy/bin/crlreloader.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ansible touch file /var/spool/cron/root
+  file:
+    path: "/var/spool/cron/root"
+    state: touch
+    
+- name: Add a root cron job to run crlreloader.sh every minute
+  lineinfile:
+    path: /var/spool/cron/root
+    line: '* * * * * /opt/proxy/bin/crlreloader.sh >> /var/log/vns/crlreloader.sh.log 2>&1'
+  
+#- name: Go to the folder and execute command
+#  command: chdir=/etc/haproxy ls
+
+#- name: Go to the folder and execute command
+#  shell: "aws s3 sync s3://nuage.files.cert/haproxy1/ ."
+
+#- name: Copy the directory
+#  copy:
+#    src: "haproxy1.txt"
+#    dest: "haproxy.cfg"
+#    remote_src: yes
+
+- name: Set haproxy_connect_any flag on and keep it persistent across reboots
+  seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+    
+- name: Copy haproxy.cfg to proxy server location
+  template:
+    owner: root 
+    group: root 
+    mode: 0644   
+    src: haproxy.cfg.j2
+    dest: /etc/opt/rh/rh-haproxy18/haproxy/haproxy.cfg
+  notify: restart haproxy
+
+- name: Copy haproxy logrotate config to to server
+  copy:
+    src: haproxy
+    dest: /etc/logrotate.d/haproxy
+    owner: root
+    group: root
+    mode: '0644'

@@ -1,0 +1,15 @@
+security.require-ssl=true
+{% if "webfilter01" in inventory_hostname %}
+server.ssl.key-store=/opt/vsd/webfilter/conf/webfilter01.jks
+server.ssl.key-alias=webfilter01
+{% endif %}
+{% if "webfilter02" in inventory_hostname %}
+server.ssl.key-store=/opt/vsd/webfilter/conf/webfilter02.jks
+server.ssl.key-alias=webfilter02
+{% endif %}
+server.ssl.key-store-password=Alcateldc
+server.ssl.key-store-provider=SUN
+server.ssl.key-store-type=JKS
+server.ssl.trust-store=/opt/vsd/webfilter/conf/truststore.jks
+server.ssl.trust-store-password=Alcateldc
+

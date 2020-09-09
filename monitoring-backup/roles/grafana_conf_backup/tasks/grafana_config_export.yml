@@ -1,0 +1,70 @@
+---
+# This task exports json formatted data for dashboards and saves
+# it to file in the /home/software/grafana_export directory so it can be used
+# to configure a new system.
+
+# Run this non destructive/non-changing playbook on a curent production system
+# to update the Grafana config files when a change has been made that needs to
+# be ported forward to a newly depoyed system.  (push changes back to git master)
+
+# Create a directory for storing exported files if not existing
+- name: Create the directory for storing Grafana export files
+  file:
+    path: "{{ grafana.export_dir }}"
+    state: directory
+    mode: 0755
+    owner: centos
+    group: centos
+  become: true
+
+# Extract all the dashbard UIDs for dashbaords with the "wl" tag
+- name: Extract and store dashboard UIDs that contain the "wl" tag
+  uri:
+    url: http://{{ grafana.export_user }}:{{ grafana.export_pass }}@{{ grafana.apiUrl }}/search?tag=wl
+#    url: http://{{ grafana.apiUrl }}/search?tag=wl
+    force_basic_auth: yes
+#    url_password: "{{ grafana.export_user }}"
+#    url_username: "{{ grafana.export_pass }}"
+    method: GET
+  register: dashboards
+
+# Get a list of the UIDs and set to variable
+- name: Set a variable to just the list of ids from the host get request
+  set_fact:
+    dashboard_list: "{{ dashboards.json }}"
+
+# Export all Grafana dashboards to file as orig_*.json
+- name: Export dashboards to original backup files
+  grafana_dashboard:
+    grafana_url: http://{{ grafana.url }}
+    grafana_user: "{{ grafana.export_user }}"
+    grafana_password: "{{ grafana.export_pass }}"
+    org_id: 1
+    state: export
+    uid: "{{ item.uid }}"
+    path: "{{ grafana.export_dir }}/g_orig_{{ item.uid }}.json"
+  with_items:  "{{ dashboard_list }}"
+
+# Export a second copy of the Grafana dashboards to file as dummy_*.json
+- name: Export dashboards a second time to dummy files
+  grafana_dashboard:
+    grafana_url: http://{{ grafana.url }}
+    grafana_user: "{{ grafana.export_user }}"
+    grafana_password: "{{ grafana.export_pass }}"
+    org_id: 1
+    state: export
+    uid: "{{ item.uid }}"
+    path: "{{ grafana.export_dir }}/g_dummy_{{ item.uid }}.json"
+  with_items:  "{{ dashboard_list }}"
+
+# Swap out the domain for the system where the backup was taken and replace it with 
+# a dummy value that can be swapped out again later
+- name: Swap out domain in all config dummy files for the dummy domain value
+  replace:
+    path: "{{ item }}"
+    regexp: "{{ grafana.domain_swap }}"
+    replace: "{{ grafana.dummy_domain }}"
+  with_fileglob: "{{ grafana.export_dir }}/g_dummy_*.json"
+
+
+

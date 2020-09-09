@@ -1,0 +1,17 @@
+BOOTPROTO=static
+DEVICE=eth0
+ONBOOT=yes
+TYPE=Ethernet
+{% if "webfilter01" in inventory_hostname %}
+IPADDR="{{ webfilter01.ip }}"
+GATEWAY="{{ webfilter01.gateway }}"
+DNS1="{{ webfilter01.dns }}"
+{% endif %}
+{% if "webfilter02" in inventory_hostname %}
+IPADDR="{{ webfilter02.ip }}"
+GATEWAY="{{ webfilter02.gateway }}"
+DNS1="{{ webfilter02.dns }}"
+{% endif %}
+NETMASK="255.255.255.0"
+DEFROUTE=yes
+NM_CONTROLLED="no"

@@ -1,0 +1,5 @@
+---
+# file: master.yml
+# This playbook deploys everything that can be deployed before metro has been executed.
+
+- import_playbook: baremetal.yml 

@@ -1,0 +1,25 @@
+---
+# These tasks install the monitjson python script on the VSD servers
+# create and start the service on port 2813
+
+- name: Copy script file to root directory nd set permissions
+  copy:
+    src: monitjson.py
+    dest: /root/monitjson.py
+    owner: root
+    group: root
+    mode: '0754'
+
+- name: Create monitjson service file
+  copy:
+    src: monitjson.service
+    dest: /usr/lib/systemd/system/monitjson.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start and enable the monitjson service
+  service:
+    name: monitjson
+    state: started
+    enabled: yes

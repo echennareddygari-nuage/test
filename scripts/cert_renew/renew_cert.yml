@@ -1,0 +1,52 @@
+---
+- hosts: proxy
+
+  tasks:
+
+  ## Renew LetsEncrypt certificate using the HTTP challenge method
+    - name: Create a challenge for {{ domain }} using a account key from a variable.
+      letsencrypt:
+        account_key_content: "{{ account_private_key }}"
+        csr: /etc/pki/cert/csr/{{ domain }}.csr
+        dest: /etc/httpd/ssl/{{ domain }}.crt
+        remaining_days: 31
+      register: challenge_result
+
+  # Make sure the requested well known acmechallenge directory exists
+    - name: "Create .well-known/acme-challenge directory"
+      file:
+        path: /var/www/html/{{ challenge_result['challenge_data'][domain]['http-01']['resource'] }}
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+
+  # Copy result of chalenge to local httpd directory for validation by LetsEncrypt
+    - name: Copy challenge result to web server directory
+    - copy:
+        dest: /var/www/html/{{ challenge_result['challenge_data'][domain]['http-01']['resource'] }}
+        content: "{{ challenge_result['challenge_data'][domain]['http-01']['resource_value'] }}"
+      when: challenge_result is changed
+
+  # Ask LetsEncrypt to validate the challenge
+    - name: Let the challenge be validated and retrieve the cert and intermediate certificate
+      letsencrypt:
+        account_key_content: "{{ account_private_key }}"
+        csr: /etc/pki/cert/csr/{{ domain }}.csr
+        dest: /etc/httpd/ssl/{{ domain }}.crt
+        fullchain_dest: /etc/httpd/ssl/{{ domain }}-fullchain.crt
+        chain_dest: /etc/httpd/ssl/{{ domain }}-intermediate.crt
+        data: "{{ challenge_result }}"
+
+  # Restart one haproxy at a time and don;t continue unless the first one returns to running state
+    - name: Restart proxy01 only and wait until it's reaches running state again
+      service:
+        name: haproxy
+        state: restarted
+      when: challenge_result is changed AND  'proxy01' in inventory_hostname
+
+    - name: Restart proxy02 only and wait until it's reaches running state again
+      service:
+        name: haproxy
+        state: restarted
+      when: challenge_result is changed AND  'proxy02' in inventory_hostname

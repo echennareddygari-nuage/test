@@ -1,0 +1,8 @@
+---  
+# The following include files contain required config/sterps/file to instal 
+# both zabbix and graylog agents on all relevant nodes
+
+- import_tasks: yum_updates.yml
+- import_tasks: metro_access.yml
+- import_tasks: nvme_raid.yml
+- import_tasks: networking.yml

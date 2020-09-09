@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/bin/zabbix_sender -vv -c /etc/zabbix/zabbix_agentd.conf -s "{{ ansible_host }}" -k alarm.notification.test -o "disabled"

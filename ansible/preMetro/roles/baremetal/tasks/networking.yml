@@ -1,0 +1,343 @@
+---
+  - name: Delete existing eth0 config file
+    file:
+      path: /etc/sysconfig/network-scripts/ifcfg-eth0
+      state: absent
+  
+  - name: Configure ifcfg-br0 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-br0.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-br0
+    notify: restart network 
+
+  - name: Configure ifcfg-br1 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-br1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-br1
+    notify: restart network 
+
+  - name: Configure ifcfg-br2 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-br2.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-br2
+    notify: restart network
+
+  - name: Configure ifcfg-br3 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-br3.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-br3
+    notify: restart network
+
+  - name: Configure ifcfg-enp4s0 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-enp4s0.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-enp4s0
+    notify: restart network 
+      
+  - name: Configure ifcfg-ens1 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-ens1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens1
+    notify: restart network 
+    
+  - name: Configure ifcfg-ens1:1 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-ens1-1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens1:1
+    notify: restart network 
+ 
+  - name: Configure ifcfg-ens1:2 file from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: ifcfg-ens1-2.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens1:2
+    notify: restart network 
+
+  - name: Configure ifcfg-ens2 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens2.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens2
+    notify: restart network
+
+
+  - name: Configure ifcfg-ens3 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens3.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens3
+    notify: restart network
+
+  - name: Configure ifcfg-ens2:1 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens2-1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens2:1
+    notify: restart network
+    when:
+      "'metal01' in inventory_hostname"
+
+  - name: Configure ifcfg-ens3:1 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens3-1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens3:1
+    notify: restart network
+    when:
+      "'metal02' in inventory_hostname"
+
+  - name: Configure ifcfg-ens2:1 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens2-1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens2:1
+    notify: restart network
+    when:
+      "'metal03' in inventory_hostname"
+
+  - name: Configure ifcfg-ens3:1 file from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: ifcfg-ens3-1.j2
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens3:1
+    notify: restart network
+    when:
+      "'metal03' in inventory_hostname"
+
+  - name: Add GATEWAYDEV=enp4s0 to /etc/sysconfig/network
+    lineinfile:
+      path: /etc/sysconfig/network  
+      line:  'GATEWAYDEV=enp4s0'
+
+  - name: Construct Network Script route-enp4s0 from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: route-enp4s0.j2
+      dest: /etc/sysconfig/network-scripts/route-enp4s0
+    notify: restart network 
+
+  - name: Construct Network Script route-ens1 from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: route-ens1.j2
+      dest: /etc/sysconfig/network-scripts/route-ens1
+    notify: restart network 
+
+  - name: Construct Network Script rule-ens1 from template 
+    template: 
+      owner: root 
+      group: root 
+      mode: 644    
+      src: rule-ens1.j2
+      dest: /etc/sysconfig/network-scripts/rule-ens1
+    notify: restart network 
+
+  - name: Construct Network Script route-ens2 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: route-ens2.j2
+      dest: /etc/sysconfig/network-scripts/route-ens2
+    notify: restart network
+
+  - name: Construct Network Script rule-ens2 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: rule-ens2.j2
+      dest: /etc/sysconfig/network-scripts/rule-ens2
+    notify: restart network
+
+  - name: Construct Network Script route-ens3 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: route-ens3.j2
+      dest: /etc/sysconfig/network-scripts/route-ens3
+    notify: restart network
+
+  - name: Construct Network Script rule-ens3 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: rule-ens3.j2
+      dest: /etc/sysconfig/network-scripts/rule-ens3
+    notify: restart network
+
+  - name: Construct Network Script route-br1 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: route-br1.j2
+      dest: /etc/sysconfig/network-scripts/route-br1
+    notify: restart network
+
+  - name: Construct Network Script route-br2 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: route-br2.j2
+      dest: /etc/sysconfig/network-scripts/route-br2
+    notify: restart network
+ 
+  - name: Construct Network Script route-br3 from template
+    template:
+      owner: root
+      group: root
+      mode: 644
+      src: route-br3.j2
+      dest: /etc/sysconfig/network-scripts/route-br3
+    notify: restart network
+ 
+  - name: Add a second route table at /etc/iproute2/rt_tables
+    lineinfile:
+      path: /etc/iproute2/rt_tables  
+      line:  '2 control'
+    notify: restart network
+  
+  - name: Add a MPLS1 route table at /etc/iproute2/rt_tables
+    lineinfile:
+      path: /etc/iproute2/rt_tables  
+      line:  '3 mpls1'
+    notify: restart network
+
+  - name: Add a MPLS2 route table at /etc/iproute2/rt_tables
+    lineinfile:
+      path: /etc/iproute2/rt_tables  
+      line:  '4 mpls2'
+    notify: restart network
+
+  - name: Enable ip forwarding
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: 1  
+      state: present
+      sysctl_set: yes
+      reload: yes
+
+  - name: Enable Reverse Path Filtering
+    sysctl:
+      name: net.ipv4.conf.all.rp_filter 
+      value: 2
+      state: present
+      sysctl_set: yes
+      reload: yes
+
+  - name: Remove interfaces from publid firewall zone
+    firewalld:
+      zone: public
+      interface: "{{ item }}"
+      state: disabled
+      permanent: yes
+      immediate: yes
+    with_items:
+      - br0
+      - br1
+      - br2
+      - br3
+      - enp4s0
+      - ens1
+      - ens2
+      - ens3
+
+  - name: Add interfaces to trusted firewall zone
+    firewalld:
+      zone: trusted
+      interface: "{{ item }}"
+      state: enabled
+      permanent: yes
+      immediate: yes
+    with_items:
+      - br0
+      - br1
+      - br2
+      - br3
+      - enp4s0
+      - ens1
+      - ens2
+      - ens3
+
+# This stuff is for VSCs only and needs to be made more dynamic and generic for the future
+# firewalld module doesn;t not support these actions so shell commands are used instead
+  - name: Install firewalld NAT rules on metal01 ONLY! (for VSCs)
+    shell: "{{ item }}"
+    with_items:
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc01.ip.public }} -j DNAT --to {{ vsc01.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc01.ip.control }} -j SNAT --to {{ vsc01.ip.public }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc03.ip.public }} -j DNAT --to {{ vsc03.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc03.ip.control }} -j SNAT --to {{ vsc03.ip.public }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc05.ip.public }} -j DNAT --to {{ vsc05.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc05.ip.control }} -j SNAT --to {{ vsc05.ip.public }}"
+      - "firewall-cmd --reload"
+    when:
+      "'metal01' in inventory_hostname"
+
+  - name: Install firewalld NAT rules on metal02 ONLY! (for VSCs)
+    shell: "{{ item }}"
+    with_items:
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc02.ip.public }} -j DNAT --to {{ vsc02.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc02.ip.control }} -j SNAT --to {{ vsc02.ip.public }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc04.ip.public }} -j DNAT --to {{ vsc04.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc04.ip.control }} -j SNAT --to {{ vsc04.ip.public }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc07.ip.public }} -j DNAT --to {{ vsc07.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc07.ip.control }} -j SNAT --to {{ vsc07.ip.public }}"
+      - "firewall-cmd --reload"
+    when:
+      "'metal02' in inventory_hostname"
+
+  - name: Install firewalld NAT rules on metal03 ONLY! (for VSCs)
+    shell: "{{ item }}"
+    with_items:
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc06.ip.public }} -j DNAT --to {{ vsc06.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc06.ip.control }} -j SNAT --to {{ vsc06.ip.public }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d {{ vsc08.ip.public }} -j DNAT --to {{ vsc08.ip.control }}"
+      - "firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s {{ vsc08.ip.control }} -j SNAT --to {{ vsc08.ip.public }}"
+      - "firewall-cmd --reload"
+    when:
+      "'metal03' in inventory_hostname"
+

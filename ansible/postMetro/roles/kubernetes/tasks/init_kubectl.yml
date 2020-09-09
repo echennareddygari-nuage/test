@@ -1,0 +1,45 @@
+---
+# This task installs and configures kubectl for access the eks cluster
+
+- name: Create a /home/software/kubectl directory in HOME (used for storing k8s app files)
+  file:
+    path: /home/software/kubectl
+    state: directory
+
+- name: Create a /bin directory in HOME to install aws tool binaries
+  file:
+    path: ~/bin
+    state: directory
+
+# Deprecated and moved inot jumphost init task
+#- name: Copy the AWS credentials file to proper dir on jump server
+#  copy:
+#    src: credentials
+#    dest: ~/.aws/credentials
+
+- name: Add new directory to the PATH env var
+  shell: export PATH=$HOME/bin:$PATH
+
+- name: Download the AWS kubctl binaries
+  get_url:
+    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.8/2019-08-14/bin/linux/amd64/kubectl
+    dest: ~/bin
+    mode: '+x'
+
+- name: Download the aws-iam-auth binary
+  get_url:
+    url: https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
+    dest: ~/bin
+    mode: '+x'
+
+- name:  Configure kubectl for the current EKS cluster {{ eksCluster.name }} (This task must come before applying config map!)
+  shell: aws --region {{ aws.region }} eks update-kubeconfig --name {{ eksCluster.name }}
+
+- name: Generate the config map file from a template
+  template:
+    src: config_map.yml.j2
+    dest: /home/software/kubectl/config_map.yml
+
+- name: Apply the config map for the eks cluster to kubectl (This task must come after update-kubeconfig task!)
+  shell: kubectl apply -f /home/software/kubectl/config_map.yml
+

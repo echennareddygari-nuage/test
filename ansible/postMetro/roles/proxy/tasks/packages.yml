@@ -1,0 +1,47 @@
+---
+# These tasks ensure all required packages are installed
+
+# Repo installs/updates (do these first in case of follow up package dependencies)
+- name: Install a new repo for haproxy 1.8
+  yum:
+    name: centos-release-scl
+    state: latest
+    update_cache: yes
+
+- name: Install a new repo for epel
+  yum:
+    name: epel-release
+    state: latest
+    update_cache: yes
+
+# Package installs
+- name: Install all required packages from standard repos
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - epel-release
+      - rh-haproxy18-haproxy 
+      - rh-haproxy18-haproxy-syspaths
+#      - keepalived
+      - awscli
+      - tcpdump
+      - wget
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - httpd
+      - rsyslog
+      - rsyslog-gnutls
+      - mod_ssl
+      - python-docker-py
+      - logrotate
+      - python-pip
+
+    state: latest
+    update_cache: yes
+
+- name: Install pyOpenSSL package using pip
+  shell: sudo pip install pyOpenSSL
+
+

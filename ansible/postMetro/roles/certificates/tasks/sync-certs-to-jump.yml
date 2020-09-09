@@ -1,0 +1,20 @@
+---
+# Copy all cert files to jump host decidcated directory
+
+  - name: Copy all pem files from VSD to jump host
+    synchronize:
+      src: /opt/vsd/ejbca/p12/pem/
+      dest: /home/software/certs
+      mode: pull
+
+  - name: Copy all webfilter jks files from VSD to jump host
+    synchronize:
+      src: /opt/vsd/ejbca/p12/webfilter*.jks
+      dest: /home/software/certs
+      mode: pull
+
+  - name: Copy truststore.jks files from VSD to jump host
+    synchronize:
+      src: /opt/vsd/ejbca/p12/truststore.jks
+      dest: /home/software/certs
+      mode: pull

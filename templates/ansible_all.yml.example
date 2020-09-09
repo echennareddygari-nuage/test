@@ -1,0 +1,411 @@
+# The deployment version of this file should live in config and is symlinked to the ansible directory
+# It WILL NOT be tracked by git, and should include local information for deployment
+# Update fields as required for region and deployment type
+
+# AWS - To be modified, specific to each deployment
+###############################################################################
+aws:
+
+  # Security token and access keys
+  access_key:
+  secret_key:
+  security_token:
+
+  # Route53 zoneID to add records for monitoring
+  hostedZoneId:
+
+
+
+# AWS - environment information
+###############################################################################
+
+  # Messaging info
+  arn:
+    sns: arn:aws:sns:us-east-1:104742821910:HVNS-ALERT
+
+
+# AWS - Accounts
+###############################################################################
+
+  ###############################################
+  # NA - Production
+  ###############################################
+  
+  #   aws_account: 104742821910
+  #   region: us-east-1
+  # public_fqdn: na1.hosted.nuagenetworks.net
+  # host_domain: prod-hvns-na01.internal
+  # eksCluster:
+  #    name: eksOps-NA01
+  # project:
+  #   name: prodHostedWL-NA01-1
+  
+  ###############################################
+  # NA - test account
+  ###############################################
+  
+  aws_account: 917414254047
+  region: us-east-1
+public_fqdn: dev01.hvns-test.com
+host_domain: hvns-dev.internal
+eksCluster:
+  name: eksOps-dev
+project:
+  name: devHostedWL01
+
+  ###############################################
+  # APAC - Production  
+  ###############################################
+
+  #   aws_account: 790730990442
+  #   region: ap-southeast-1
+  # public_fqdn: apac1.hosted.nuagenetworks.net
+  # host_domain: prod-hvns-apac01.internal
+  # eksCluster:
+  #   name: eksOps-APAC01
+  # project:
+  #   name: prodHostedWL-APAC01
+
+
+## Contact Information
+###############################################################################
+
+phone:
+  mon_mobile: +351924106907
+  ops_mobile: +351918812821
+
+
+## File Location Paths
+##############################################################################
+
+file_path:
+  nuage_unzip: /home/software/VNS/5_4_1_U8/unzipped
+
+# NSG - specific config data
+###############################################################################
+
+# Version number for the upgrade file
+# Gets appended to ncpeimg_{{ upgrade_ver }}.tar (example setting --> upgrade_ver: 5.2.3_278)
+upgrade_ver: 5.4.1_279
+
+## Subnet Configuration
+##############################################################################
+
+subnet:
+  mgmt: 100.70.0.0/16
+  ops: 100.71.0.0/16
+  public: 100.72.0.0/16
+
+## Host Based IP information
+##############################################################################
+
+# Jump IP
+jump:
+  ip: 100.72.1.100
+
+# Amazon NTP
+ntp:
+  ip: 169.254.169.123
+
+# The AWS DNS server (this is usually the mgmt subnet base address + 2)
+dns:
+  ip: 100.70.0.2
+
+# Baremetal  - networking info
+###############################################################################
+metal01:
+  ip:
+    br0: 100.120.1.1
+    br1: 100.121.1.1
+    br2: 100.122.1.1
+    br3: 100.122.1.17
+    enp4s0: 100.70.1.10
+    ens1: 100.72.1.10
+    ens1_1: 100.72.1.101
+    ens1_2: 100.72.1.103
+    ens2: 100.73.1.10
+    ens2_1: 100.73.1.5
+    ens3: 100.73.1.20
+  gateway: 
+    enp4s0: 100.70.1.1
+    ens1: 100.72.1.1
+    ens2: 100.73.1.1
+    ens3: 100.73.1.17
+  routes:
+    mgmt: 100.70.1.0/24
+    public: 100.72.1.0/24
+    mpls1: 100.73.1.0/28
+    mpls2: 100.73.1.16/28
+    br0: 100.120.1.0/24
+    br1: 100.121.1.0/24
+    br2: 100.122.1.0/28
+    br3: 100.122.1.16/28
+
+metal02:
+  ip:
+    br0: 100.120.2.1
+    br1: 100.121.2.1
+    br2: 100.122.2.1
+    br3: 100.122.2.17
+    enp4s0: 100.70.2.10
+    ens1: 100.72.2.10
+    ens1_1: 100.72.2.102
+    ens1_2: 100.72.2.104
+    ens2: 100.73.2.10
+    ens3: 100.73.2.20
+    ens3_1: 100.73.2.27
+  gateway: 
+    enp4s0: 100.70.2.1
+    ens1: 100.72.2.1
+    ens2: 100.73.2.1
+    ens3: 100.73.2.17
+  routes:
+    mgmt: 100.70.2.0/24
+    public: 100.72.2.0/24
+    mpls1: 100.73.2.0/28
+    mpls2: 100.73.2.16/28
+    br0: 100.120.2.0/24
+    br1: 100.121.2.0/24
+    br2: 100.122.2.0/28
+    br3: 100.122.2.16/28
+
+
+metal03:
+  ip:
+    br0: 100.120.3.1
+    br1: 100.121.3.1
+    br2: 100.122.3.1
+    br3: 100.122.3.17
+    enp4s0: 100.70.3.10
+    ens1: 100.72.3.10
+    ens1_1: 100.72.3.105
+    ens1_2: 100.72.3.106
+    ens2: 100.73.3.10
+    ens2_1: 100.73.3.6
+    ens3: 100.73.3.20
+    ens3_1: 100.73.3.28
+  gateway: 
+    enp4s0: 100.70.3.1
+    ens1: 100.72.3.1
+    ens2: 100.73.3.1
+    ens3: 100.73.3.17
+  routes:
+    mgmt: 100.70.3.0/24
+    public: 100.72.3.0/24
+    mpls1: 100.73.3.0/28
+    mpls2: 100.73.3.16/28
+    br0: 100.120.3.0/24
+    br1: 100.121.3.0/24
+    br2: 100.122.3.0/28
+    br3: 100.122.3.16/28
+
+
+# webfiltering  - networking info
+###############################################################################
+webfilter01:
+   ip: 100.70.1.30
+   gateway: 100.70.1.1
+   dns: 100.70.0.2
+ 
+webfilter02:
+   ip: 100.70.2.30
+   gateway: 100.70.2.1
+   dns: 100.70.0.2
+
+
+## VSC Configuration - IPs
+###############################################################################
+
+vscs:
+  snmp_community: 8VpzVBxQWvJ24e5B
+
+vsc01:
+  ip:
+    bof: 100.120.1.101
+    control: 100.121.1.101
+    public: 100.72.1.101
+    system:
+
+vsc02:
+  ip:
+    bof: 100.120.2.102
+    control: 100.121.2.102
+    public: 100.72.2.102
+    system:
+
+vsc03:
+  ip:
+    bof: 100.120.1.103
+    control: 100.121.1.103
+    public: 100.72.1.103
+    system:
+
+vsc04:
+  ip:
+    bof: 100.120.2.104
+    control: 100.121.2.104
+    public: 100.72.2.104
+    system:
+
+vsc05:
+  ip:
+    bof: 100.120.1.105
+    control: 100.122.1.5
+    public: 100.73.1.5
+    system: 100.73.1.5
+
+vsc06:
+  ip:
+    bof: 100.120.3.106
+    control: 100.122.3.6
+    public: 100.73.3.6
+    system: 100.73.3.6
+
+vsc07:
+  ip:
+    bof: 100.120.2.107
+    control: 100.122.2.27
+    public: 100.73.2.27
+    system: 100.73.2.27
+
+vsc08:
+  ip:
+    bof: 100.120.3.108
+    control: 100.122.3.28
+    public: 100.73.3.28
+    system: 100.73.3.28
+
+
+## SDWAN PORTAL
+##############################################################################
+
+portal01:
+  ip: 100.70.1.22
+
+portal02:
+  ip: 100.70.2.22
+
+portal03:
+  ip: 100.70.3.22
+
+# Zabbix - specific config data
+###############################################################################
+zabbix:
+  dataHostname: zabbix-data.{{ host_domain }}
+  webHostname:  zabbix.{{ host_domain }}
+  apiUrl:       http://zabbix.{{ host_domain }}/zabbix
+  webPort:      8980
+  apiUser:      Admin 
+  apiPass:      zabbix
+  agentrepo:    https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-agent-4.0.5-1.el7.x86_64.rpm
+  senderrepo:   https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-sender-4.0.5-1.el7.x86_64.rpm
+  export_dir:   /home/software/zabbix_export
+  
+  # don't forget to update password with a one time random value
+  notificationUser: notifications
+  notificationPass: notifications 
+  grafanaUser: grafana
+  grafanaPass: grafana
+
+  # This only applies for the zabbix config backup role
+  # it is used to swap out existing domain (domain_swap) for a generic one (dummy_domain) 
+  # that can be substituted for current domain at execution time when creating a new deployment
+  domain_swap:  prod-hvns-na01.internal
+  dummy_domain: dummy.domain
+
+# Graylog  - specific config data
+###############################################################################
+graylog:
+  api_url: http://graylog.{{ host_domain }}:9000/api
+  repo:    https://github.com/Graylog2/collector-sidecar/releases/download/0.1.8/collector-sidecar-0.1.8-1.x86_64.rpm
+
+
+# Grafana specific config data
+###############################################################################
+grafana:
+  url:          grafana.{{ host_domain }}:3000
+  apiKey:
+  apiUrl:       grafana.{{ host_domain }}:3000/api
+  export_user:  admin
+  export_pass:  Alcateldc
+  export_dir:   /home/software/grafana_export
+
+  # This only applies for the zabbix config backup role
+  # it is used to swap out existing domain (domain_swap) for a generic one (dummy_domain) 
+  # that can be substituted for current domain at execution time when creating a new deployment
+  domain_swap:  prod-hvns-na01.internal
+  dummy_domain: dummy.domain
+
+worldping:
+  url:    https://worldping-api.raintank.io/api/v2/endpoints
+  apiKey: eyJrIjoiMmQ1NmY1YTgxODQ0Mjg0MDY5NjUyYzVjNmRiYWQ1NTQyNTI0OTNkMyIsIm4iOiJ3b3JsZFBpbmcgcGx1Z2luIiwiaWQiOjIzODM0Mn0=
+
+# Proxy - networking info
+###############################################################################
+proxy01:
+  ip:
+    ens6: 100.72.1.191
+    ens5: 100.70.1.191
+  gateway: 
+    ens6: 100.72.1.1
+    ens5: 100.70.1.1
+  route_sub:
+    ens6: 100.72.1.0
+    ens5: 100.72.1.100
+
+proxy02:
+  ip:
+    ens6: 100.72.2.192
+    ens5: 100.70.2.192
+  gateway:
+    ens6: 100.72.2.1
+    ens5: 100.70.2.1
+  route_sub:
+    ens6: 100.72.2.0
+    ens5: 100.72.1.100
+
+
+proxy03:
+  ip:
+    eth1: 100.70.1.183
+    eth2: 100.73.1.13
+    eth3: 100.73.1.23
+  gateway:
+    eth1: 100.70.1.1
+    eth2: 100.73.1.1
+    eth3: 100.73.1.17
+  route_sub:
+    ens6: 100.72.2.0
+    ens5: 100.72.1.100
+
+proxy04:
+  ip:
+    ens6: 100.72.2.192
+    ens5: 100.70.2.192
+  gateway:
+    ens6: 100.72.2.1
+    ens5: 100.70.2.1
+  route_sub:
+    ens6: 100.72.2.0
+    ens5: 100.72.1.100
+
+
+
+
+
+
+activation_url: 
+
+# VSD - sepcific config info
+###############################################################################
+
+# These vars are used for vsd user creation
+nuage_auth:
+  api_username: csproot
+  api_password: csproot
+  api_enterprise: csp
+  api_url: https://vsd01:8443
+  api_version: v5_0
+
+new_pass: "{{ lookup('password', '/dev/null length=10 chars=ascii_letters') }}"
+

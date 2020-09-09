@@ -1,0 +1,6 @@
+---
+# Perform all requird initialization steps on jumphost before running other tasks
+# e.g. install apckages, create directories, copy files, etc
+
+- import_tasks: init.yml
+

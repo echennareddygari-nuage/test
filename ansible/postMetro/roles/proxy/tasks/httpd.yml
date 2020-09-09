@@ -1,0 +1,71 @@
+---
+
+- name: Start and enable the htpd service
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Update the httpd.conf file with custom block
+  blockinfile:
+    path: /etc/httpd/conf/httpd.conf
+    marker: "# {mark}"
+    marker_begin: "This custom block added by ansible deployment script"
+    marker_end: "End of custom block"
+    block: |
+      <VirtualHost _default_:8008>
+      ServerName upgrade.{{ public_fqdn }}
+      SSLEngine on
+      SSLCertificateFile /opt/proxy/config/keys/upgradeCert.pem
+      SSLCertificateKeyFile /opt/proxy/config/keys/upgrade-Key.pem
+      DocumentRoot /var/www/html
+      Options -Indexes
+      </VirtualHost>
+  notify: restart httpd
+
+
+- name: Create folder for NSG image
+  file:
+    path: /var/www/html/upgrade/{{ upgrade_ver }}
+    state: directory
+    owner: root
+    group: root
+    mode: 644
+    recurse: yes
+
+- name: Setup /var/www/html/metadata.json file  
+  template:     
+    src: metadata.json.j2
+    dest: /var/www/html/upgrade/{{ upgrade_ver }}/metadata.json
+  notify: restart httpd
+
+- name: Replace port numbers in /etc/httpd/conf.d/ssl.conf file from 443 to 8008
+  replace:
+    path: /etc/httpd/conf.d/ssl.conf
+    regexp: '443'
+    replace: '8008'
+    backup: yes
+  notify: restart httpd
+
+- name: Replace a string in /etc/httpd/conf.d/welcome.conf 
+  replace:
+    path: /etc/httpd/conf.d/welcome.conf
+    regexp: '^ErrorDocument'
+    replace: '#ErrorDocument'
+    backup: yes
+
+- name: Copy the NSG image tar to httpd path
+  copy:
+    src: "{{ file_path.nuage_unzip }}/vns/nsg/ncpeimg_{{ upgrade_ver }}.tar"
+    dest: /var/www/html/upgrade/{{ upgrade_ver }}
+    owner: root 
+    group: root 
+    mode: 644      
+
+- name: Copy the NSG image MD5 to httpd path
+  copy:
+    src: "{{ file_path.nuage_unzip }}/vns/nsg/ncpeimg_{{ upgrade_ver }}.md5"
+    dest: /var/www/html/upgrade/{{ upgrade_ver }}
+    owner: root 
+    group: root 
+    mode: 644  

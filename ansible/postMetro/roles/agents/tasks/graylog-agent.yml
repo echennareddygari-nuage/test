@@ -1,0 +1,36 @@
+---
+# The following tasks install Graylog client packages and configures template files 
+# to collect logs 
+
+  - name: Install Graylog collector-sidecar client package from file
+    yum: 
+      name: "{{ graylog.repo }}"
+      state: present
+    become: true
+    ignore_errors: yes
+    
+  - name: Check if collector-sidecar is already installed as a service
+    stat:
+      path: /etc/systemd/system/collector-sidecar.service
+    register: serviceInstalled
+    become: true
+
+  - name: Install the collector-sidecar as a service
+    command: graylog-collector-sidecar -service install 
+    when: serviceInstalled.stat.exists == False
+    become: true
+
+  - name: Start the collector-sidecar service
+    systemd: 
+      name: collector-sidecar 
+      state: started 
+      enabled: yes
+    become: true
+
+  - name: Configure the collector-sidecar yml config file using a template
+    template:
+      force: yes
+      src: collector_sidecar.yml.j2
+      dest: /etc/graylog/collector-sidecar/collector_sidecar.yml
+    become: true
+    notify: restart collector-sidecar

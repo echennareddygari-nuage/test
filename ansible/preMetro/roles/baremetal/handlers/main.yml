@@ -1,0 +1,14 @@
+---
+
+- name: restart network
+  service:
+    name: network
+    state: restarted
+  become: true
+
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+  become: true
+

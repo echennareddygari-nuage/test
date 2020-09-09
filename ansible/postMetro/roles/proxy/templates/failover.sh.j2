@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# update zabbix with new master/standby status
+{% if "proxy01" in inventory_hostname %}
+MASTER_OUT=$(/bin/zabbix_sender -vv -c /etc/zabbix/zabbix_agentd.conf -s "proxy01.{{ host_domain }}" -k haproxy.master.failover -o "master")
+STDBY_OUT=$(/bin/zabbix_sender -vv -c /etc/zabbix/zabbix_agentd.conf -s "proxy02.{{ host_domain }}" -k haproxy.master.failover -o "standby")
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+MASTER_OUT=$(/bin/zabbix_sender -vv -c /etc/zabbix/zabbix_agentd.conf -s "proxy02.{{ host_domain }}" -k haproxy.master.failover -o "master")
+STDBY_OUT=$(/bin/zabbix_sender -vv -c /etc/zabbix/zabbix_agentd.conf -s "proxy01.{{ host_domain }}" -k haproxy.master.failover -o "standby")
+{% endif %}
+logger "$MASTER_OUT"
+logger "$STDBY_OUT"
+
+# aws commands
+logger "Running in Proxy1"
+MAC_ETH1=$(cat /sys/class/net/ens6/address)
+{% if "proxy01" in inventory_hostname %}
+NETWORK_ID=$(aws ec2 describe-network-interfaces --filters "Name=addresses.private-ip-address,Values={{ proxy01.ip.ens6 }}" "Name=tag:Project,Values={{ project.name }}"  | grep "NetworkInterfaceId" | awk -F\" '{print $4}')
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+NETWORK_ID=$(aws ec2 describe-network-interfaces --filters "Name=addresses.private-ip-address,Values={{ proxy02.ip.ens6 }}" "Name=tag:Project,Values={{ project.name }}"  | grep "NetworkInterfaceId" | awk -F\" '{print $4}')
+{% endif %}
+EIP_ALLOC_ID=$(aws ec2 describe-addresses --filters Name=tag:Name,Values=PROXY-PUBLIC-VIP | grep Allocation | awk -F\" '{print $4}')
+aws ec2 associate-address --allocation-id $EIP_ALLOC_ID --network-interface-id $NETWORK_ID --allow-reassociation
+logger "Done"

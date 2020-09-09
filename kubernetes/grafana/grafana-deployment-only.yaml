@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+      containers:
+      - name: grafana
+        image: grafana/grafana:5.4.2
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GF_SERVER_HTTP_PORT
+          value: "3000"
+        - name: GF_INSTALL_PLUGINS
+          value: "ryantxu-ajax-panel,btplc-alarm-box-panel,vonage-status-panel,flant-statusmap-panel,grafana-clock-panel,grafana-simple-json-datasource,alexanderzobnin-zabbix-app,briangann-gauge-panel,raintank-worldping-app"
+        - name: GF_DATABASE_TYPE
+          value: mysql
+        - name: GF_DATABASE_URL
+          value: mysql://grafana:grafana@grafana-db:3306/grafana
+        - name: GF_SSL_MODE
+          value: "false"
+        - name: GF_SESSION_PROVIDER
+          value: mysql
+        - name: GF_SESSION_PROVIDER_CONFIG
+          value: "grafana:grafana@tcp(grafana-db:3306)/grafana"
+        - name: GF_SMTP_FROM_ADDRESS
+          value: "hosted@nuagenetworks.net"
+        - name: GF_SMTP_FROM_NAME
+          value: "Grafana"
+        - name: GF_SMTP_HOST
+          value: "email-smtp.us-east-1.amazonaws.com:587"
+        - name: GF_SMTP_PASSWORD
+          value: "BPVQjbocRo2oEJ8j0pAOkvbe3fNT92ky0Pwncu41AXcL"
+        - name: GF_SMTP_USER
+          value: "AKIAJ6IXTTNFZRSAT4PA"
+        - name: GF_SMTP_ENABLED
+          value: "true"
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+      volumes:
+      - name: grafana-storage
+        emptyDir: {}
+      restartPolicy: Always

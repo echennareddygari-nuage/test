@@ -1,0 +1,58 @@
+---
+# Configure the notification app and dependencies
+
+- name: Configuring docker-ce repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: 0644
+    
+- name: Installing Docker latest version
+  yum: 
+    name: docker-ce
+    state: present
+    
+- name: Starting and Enabling Docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+    
+- name: Download docker compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.12.0/docker-compose-Linux-x86_64
+    dest: /usr/bin/docker-compose 
+    mode: 0755
+    
+- name: Disable all ipv6 configurations in sysctl
+  sysctl:
+    name: net.ipv6.conf.all.disable_ipv6
+    value: 1
+    state: present
+    
+- name: Disable default ipv6 configurations sysctl
+  sysctl:
+    name: net.ipv6.conf.default.disable_ipv6
+    value: 1
+    state: present
+    
+- name: Run the docker command to start the notificatin app
+  #shell: docker run -v /opt/notification-app:/opt/notification-app/mount:Z --name=notification-app --restart=always -p 3242:3242/udp -d nuage/notification-app:2.0.12
+  docker_container:
+    name: notification-app
+    image: nuage/notification-app:2.0.12
+    state: started
+    restart: yes
+    ports: "3242:3242/udp"
+    volumes: /opt/notification-app:/opt/notification-app/mount:Z
+      
+- name: Copy notif-app license file
+  copy:     
+    src: /home/software/licenses/notification-app.license
+    dest: /opt/notification-app/notification-app.license 
+      
+- name: Copy over notif-app config file from template 
+  template: 
+    src: config.json.j2     
+    dest: /opt/notification-app/config.json
+

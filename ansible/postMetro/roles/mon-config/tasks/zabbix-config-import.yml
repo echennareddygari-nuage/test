@@ -1,0 +1,139 @@
+---
+# This task configures a new Zabbix system to a fully ready state for monitoring the entire WL instance
+# Objects are configured using exsiting zabbix modules where possible
+# For objects where no zabbix module exists, we use the uri module to run zabbix api requests
+# The order of object creation has dependencies...do not chnage the order unless you know what you are doing!
+
+# Api based user auth token generation 
+- name: Generate an auth token for all subsequent API requests
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: '{"jsonrpc": "2.0", "method": "user.login", "params": {"user": "{{ zabbix.apiUser }}", "password": "{{ zabbix.apiPass }}"}, "id": 1, "auth": null}'
+    body_format: json
+  register: user_auth
+
+# Set the token to a variable for re-use
+- name: Extract the auth token and set as variable
+  set_fact:
+    token: "{{ user_auth.json.result }}"
+
+
+# Read config file into variable
+#- name: Read config file into variable
+#  set_fact:
+#    just_config:  "{{ lookup('file', '/home/software/zabbix_export/host_10389.json') | replace('\"', '\\\"') }}"
+
+# Generate template and write to file
+#- name: Create template
+#  template:
+#    src: import_templates4.j2
+#    dest: "{{ zabbix.export_dir }}/file_write_test.json"
+
+# load full template to variable
+#- name: load generated template inot variable
+#  set_fact:
+#    full_template: "{{ lookup('template', 'import_templates4.j2') }}"
+
+# Write config from variable back to file
+#- copy:
+#    content: "{{ full_template }}"
+#    dest: "{{ zabbix.export_dir }}/file_write_test.json"
+
+# Import  the test config file into Zabbix
+- name: Import the host configuration files into Zabbix
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'import_templates.j2') }}"
+    body_format: json
+  with_fileglob: "z_dummy_host_*.json"
+
+# Generate template and write to file
+#- name: Create template
+#  template:
+#    src: import_templates4.j2
+#    dest: "{{ item }}.test"
+#  with_fileglob: "{{ zabbix.export_dir }}/template_*.json"
+
+# Import  the test config file into Zabbix
+- name: Import the template configuration files into Zabbix
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'import_templates.j2') }}"
+    body_format: json
+  with_fileglob: "z_dummy_template_*.json"
+
+# Import  the test config file into Zabbix
+#- name: Import the test configuration file into Zabbix
+#  uri:
+#    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+#    method: POST
+#    body: "{{ lookup('file', '/home/software/zabbix_export/file_write_test.json') }}"
+#    body_format: json
+
+
+#- name: Test
+#  set_fact:
+#    json: '{\"zabbix_export\": {\"date\": \"2019-11-05T17:38:57Z\", \"version\": \"4.2\", \"hosts\": [{\"status\": \"0\", \"groups\": [{\"name\": \"Linux nodes\"}, {\"name\": \"VSD nodes\"}], \"ipmi_username\": \"\", \"httptests\": [{\"status\": \"0\", \"verify_host\": \"0\", \"name\": \"Policy engine API status\", \"application\": {\"name\": \"Cachet\"}, \"variables\": [], \"http_proxy\": \"\", \"attempts\": \"1\", \"agent\": \"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.104 Safari/537.36\", \"delay\": \"1m\", \"headers\": [], \"authentication\": \"1\", \"steps\": [{\"name\": \"Policy engine API status - 1\", \"url\": \"https://vsd01.prod-hvns-na01.internal:8443/nuage/api/v5_0/me\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}, {\"name\": \"Policy engine API status - 2\", \"url\": \"https://vsd02.prod-hvns-na01.internal:8443/nuage/api/v5_0/me\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}, {\"name\": \"Policy engine API status - 3\", \"url\": \"https://vsd03.prod-hvns-na01.internal:8443/nuage/api/v5_0/me\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}], \"http_user\": \"zabbix\", \"ssl_cert_file\": \"\", \"ssl_key_password\": \"\", \"verify_peer\": \"0\", \"http_password\": \"guZb$jrz$w5U\", \"ssl_key_file\": \"\"}, {\"status\": \"0\", \"verify_host\": \"0\", \"name\": \"Policy engine status\", \"application\": {\"name\": \"Cachet\"}, \"variables\": [], \"http_proxy\": \"\", \"attempts\": \"1\", \"agent\": \"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.104 Safari/537.36\", \"delay\": \"1m\", \"headers\": [], \"authentication\": \"1\", \"steps\": [{\"name\": \"Policy engine cluster status - 1\", \"url\": \"https://vsd01.prod-hvns-na01.internal:8443/nuage/health\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"GOOD\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}, {\"name\": \"Policy engine cluster status - 2\", \"url\": \"https://vsd02.prod-hvns-na01.internal:8443/nuage/health\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"GOOD\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}, {\"name\": \"Policy engine cluster status - 3\", \"url\": \"https://vsd03.prod-hvns-na01.internal:8443/nuage/health\", \"follow_redirects\": \"1\", \"variables\": [], \"required\": \"GOOD\", \"posts\": \"\", \"headers\": [], \"query_fields\": [], \"timeout\": \"15s\", \"retrieve_mode\": \"0\", \"status_codes\": \"200\"}], \"http_user\": \"zabbix\", \"ssl_cert_file\": \"\", \"ssl_key_password\": \"\", \"verify_peer\": \"0\", \"http_password\": \"guZb$jrz$w5U\", \"ssl_key_file\": \"\"}], \"ipmi_authtype\": \"-1\", \"discovery_rules\": [], \"tls_psk\": \"\", \"ipmi_privilege\": \"2\", \"macros\": [], \"inventory\": {\"inventory_mode\": \"-1\"}, \"templates\": [{\"name\": \"Template App VSD server\"}, {\"name\": \"Template OS Linux\"}], \"description\": \"\", \"tags\": [{\"tag\": \"WL\", \"value\": \"Yes\"}], \"interfaces\": [{\"default\": \"1\", \"ip\": \"\", \"useip\": \"0\", \"bulk\": \"1\", \"dns\": \"vsd03.prod-hvns-na01.internal\", \"type\": \"1\", \"port\": \"10050\", \"interface_ref\": \"if1\"}, {\"default\": \"0\", \"ip\": \"10.1.3.247\", \"useip\": \"1\", \"bulk\": \"1\", \"dns\": \"ip-10-1-3-247.ec2.internal\", \"type\": \"1\", \"port\": \"10050\", \"interface_ref\": \"if2\"}], \"tls_accept\": \"1\", \"applications\": [{\"name\": \"Cachet\"}], \"host\": \"vsd03.prod-hvns-na01.internal\", \"proxy\": [], \"ipmi_password\": \"\", \"tls_issuer\": \"\", \"tls_psk_identity\": \"\", \"name\": \"vsd03.prod-hvns-na01.internal\", \"items\": [], \"tls_connect\": \"1\", \"tls_subject\": \"\"}], \"groups\": [{\"name\": \"Linux nodes\"}, {\"name\": \"VSD nodes\"}]}}'
+
+#- name: Read config file inot variable
+#  set_fact:
+#    host_config:  "{{ lookup('file', item, convert_data=False) }}"
+#  with_fileglob: "{{ zabbix.export_dir }}/host_*.json"
+#  register: host_config_result
+
+#- debug:
+#    msg: "{{ host_config_result }}"
+
+#- name: Create variabl that is just of json configuration list 
+#  set_fact:
+#    host_config_list: "{{ host_config_result.results[0].ansible_facts.host_config }} "
+
+#- debug:
+#    msg: "{{ host_config_list | to_json }}"
+
+#- name: set fact 
+#  set_fact:
+#    new_host_config: "{{ host_config_list | replace('\"', '\\\"') }}"
+
+#- name: show template
+#  set_fact:
+#    full_template: "{{ lookup('template', 'import_templates4.j2') }}"
+
+#- copy:
+#    content: "{{ full_template }}"
+#    dest: "{{ zabbix.export_dir }}/test.json"
+
+
+#- debug:
+#    msg: "{{ new_host_config }}"
+
+#- pause:
+#    prompt: "Hit enter to continue..."
+
+# Import all the config files into Zabbix
+#- name: Import the template configuration files into Zabbix
+#  uri:
+#    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+#    method: POST
+#    body: "{{ full_template }}"
+#    body_format: json
+#  register: import_result
+ # with_fileglob: "{{ zabbix.export_dir }}/template_*.json"
+
+#- debug:
+#    msg: "{{ lookup('template', 'import_templates3.j2', convert_data=False) }}"
+
+#- name: Import the host configuration files into Zabbix
+#  uri:
+#    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+#    method: POST
+#    body: "{{ lookup('template', 'import_templates.j2', convert_data=True) | string }}"
+#    body_format: json
+#  with_fileglob: "{{ zabbix.export_dir }}/host_*.json"
+#  register: import_result
+
+#- debug:
+#    msg: "{{ import_result }}"

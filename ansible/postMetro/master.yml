@@ -1,0 +1,13 @@
+---
+# file: master.yml
+# This playbook deploys everything that can be deployed after metro has been executed.
+
+- import_playbook: jumphost.yml
+- import_playbook: certificates.yml
+- import_playbook: webfilter.yml
+- import_playbook: agents.yml
+- import_playbook: tools.yml
+- import_playbook: proxy.yml
+- import_playbook: portal.yml
+- import_playbook: vsd.yml
+- import_playbook: kubernetes.yml

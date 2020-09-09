@@ -1,0 +1,15 @@
+{
+    "jsonrpc": "2.0",
+    "method": "user.create",
+    "params": {
+        "alias": "opsguest",
+        "passwd": "opsguest",
+        "usrgrps": [
+            {            
+                "usrgrpid": "{{ opsguest_group.json.result[0].usrgrpid }}"
+            }
+        ]
+    },
+    "auth": "{{ token }}",
+    "id": 103
+}

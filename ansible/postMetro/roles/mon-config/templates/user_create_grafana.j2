@@ -1,0 +1,15 @@
+{
+    "jsonrpc": "2.0",
+    "method": "user.create",
+    "params": {
+        "alias": "{{ zabbix.grafanaUser }}",
+        "passwd": "{{ zabbix.grafanaPass }}",
+        "usrgrps": [
+            {            
+                "usrgrpid": "12"
+            }
+        ]
+    },
+    "auth": "{{ token }}",
+    "id": 102
+}

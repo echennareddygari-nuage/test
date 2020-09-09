@@ -1,0 +1,11 @@
+# Install all necessary packages for metal servers
+
+- name: Install the nvme-cli tool packages
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - nvme-cli
+    - libselinux-python
+    

@@ -1,0 +1,1 @@
+curl -s --header "Authorization: Bearer {{ worldping.apiKey }}" '{{ worldping.url }}' | jq '.body[] | select(.name == "{{ public_fqdn }}") | .checks[] | select(.type == "dns").state'

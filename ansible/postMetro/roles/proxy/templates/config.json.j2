@@ -1,0 +1,101 @@
+{% if "proxy01" in inventory_hostname %}
+{
+    "xmpp": {
+        "user": "napp1",
+        "password": "napp1",
+        "host": "{{ host_domain }}",
+        "service": "xmpp.{{ host_domain }}",
+        "resource": "vsd",
+        "pingInterval": 2000,
+        "sleepTimer": 5000
+    },
+
+    "highAvailability" : {
+        "index" : 0,
+        "port" : 3242,
+        "type": "udpfailover",
+        "peers" : [
+            "{{ proxy01.ip.ens5 }}",
+            "{{ proxy02.ip.ens5 }}"
+        ]
+    },
+
+    "vsd": {
+        "apiBaseUrl": "https://{{ proxy01.ip.ens5 }}:8443/",
+        "username": "csproot",
+        "password": "csproot",
+        "enterprise": "csp",
+        "sleepTimer": 2000,
+        "useXmppForEvents": "true",
+        "socketTimeout": 60000
+    },
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+{
+    "xmpp": {
+        "user": "napp2",
+        "password": "napp2",
+        "host": "{{ proxy02.ip.ens5 }}",
+        "service": "xmpp.{{ host_domain }}",
+        "resource": "vsd",
+        "pingInterval": 2000,
+        "sleepTimer": 5000
+    },
+
+    "highAvailability" : {
+        "index" : 1,
+        "port" : 3242,
+        "type": "udpfailover",
+        "peers" : [
+            "{{ proxy01.ip.ens5 }}",
+            "{{ proxy02.ip.ens5 }}"
+        ]
+    },
+
+    "vsd": {
+        "apiBaseUrl": "https://{{ proxy02.ip.ens5 }}:8443/",
+        "username": "csproot",
+        "password": "csproot",
+        "enterprise": "csp",
+        "sleepTimer": 2000,
+        "useXmppForEvents": "true",
+        "socketTimeout": 60000
+    },
+{% endif %}
+
+    "smtp": {
+        "host": "email-smtp.us-east-1.amazonaws.com",
+        "port": 587,
+        "user": "AKIARQYZIUALAUMGIRFD",
+        "password": "BMOs7rJWzbCVNYg4YOAH95F9yJZNugHbhiMsvyIQkppK",
+        "secureConnection": "false"
+    },
+
+    "httpProxy": {
+        "host": "",
+        "port": 8080
+    },
+
+    "notificationHandlers": [
+        {
+            "notificationType": "NOTIFY_NSG_REGISTRATION",
+            "transport": "smtp",
+            "from": { "name" : "Nuage Networks", "address": "hosted@nuagenetworks.net" },
+            "to": { "name" : "${message.installer.firstName} ${message.installer.lastName}", "address": "${message.installer.email}" },
+            "subject": "Network Services Gateway Activation for ${message.gateway.name}",
+            "contentType": "text/html; charset=UTF-8",
+            "contentTemplateLanguage": "en",
+            "contentTemplateFile": "nsg_registration_email_template.html"
+        },
+        {
+            "notificationType": "NOTIFY_NSG_TWO_FACTOR",
+            "transport": "smtp",
+            "from": { "name" : "Nuage Networks", "address": "hosted@nuagenetworks.net" },
+            "to": { "name" : "${message.installer.firstName} ${message.installer.lastName}", "address": "${message.installer.email}" },
+            "subject": "Network Services Enrollement Code for ${message.gateway.name}",
+            "contentType": "text/html; charset=UTF-8",
+            "contentTemplateLanguage": "en",
+            "contentTemplateFile": "nsg_two_factor_email_template.html"
+        }
+    ]
+}

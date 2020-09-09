@@ -1,0 +1,5 @@
+---
+# cleanup and other misc task that don;t fall inot other playbooks.
+
+- name: Set all hostnames at OS level to proper values (per inventory hostnames)
+  hostname: "{{ inventory_hostname }}"

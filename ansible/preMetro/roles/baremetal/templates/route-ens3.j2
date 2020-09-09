@@ -1,0 +1,12 @@
+{% if "metal01" in inventory_hostname %}
+{{ metal01.routes.mpls2 }} dev ens3 table mpls2
+default via {{ metal01.gateway.ens3 }} dev ens3 table mpls2
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+{{ metal02.routes.mpls2 }} dev ens3 table mpls2
+default via {{ metal02.gateway.ens3 }} table mpls2
+{% endif %}
+{% if "metal03" in inventory_hostname %}
+{{ metal03.routes.mpls2 }} dev ens3 table mpls2
+default via {{ metal03.gateway.ens3 }} table mpls2
+{% endif %}

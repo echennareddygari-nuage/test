@@ -1,0 +1,13 @@
+{% if "metal01" in inventory_hostname %}
+from {{ metal01.routes.public }} lookup control
+from {{ metal01.routes.br1 }} lookup control
+from {{ jump.ip }} lookup main
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+from {{ metal02.routes.public }} lookup control
+from {{ metal02.routes.br1 }} lookup control
+{% endif %}
+{% if "metal03" in inventory_hostname %}
+from {{ metal03.routes.public }} lookup control
+from {{ metal03.routes.br1 }} lookup control
+{% endif %}

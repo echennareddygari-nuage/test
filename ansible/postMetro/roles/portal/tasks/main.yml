@@ -1,0 +1,5 @@
+---  
+# The following include files contain all required steps to install
+# portal associated applications and configurations
+
+- import_tasks: scripts.yml

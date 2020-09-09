@@ -1,0 +1,5 @@
+---  
+# The following tasks contain all required steps to 
+# configure VSD customizations post metro
+
+- import_tasks: monitjson.yml 

@@ -1,0 +1,26 @@
+# Copy (do not move) this file to terraform.tfvars
+# It WILL NOT be tracked by git, and should include local information for deployment
+# Update fields as required for region and deployment type
+
+awsAccessKey = "AKIAIAGWZBJZL46CNI6A"
+awsSecretKey = "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"
+awsRegion = "us-east-1"
+awsAZ1 = "us-east-1a"
+awsAZ2 = "us-east-1b"
+awsAZ3 = "us-east-1c"
+
+awsKeyName = "dnovosel_hvns_test"
+
+projectName = "stageHostedWL01"
+internalFQDN = "hvns-stage.internal"
+
+metalInstanceType = "t2.micro"
+proxyInstanceType = "t2.micro"
+eksInstanceType = "t2.large"
+jumpInstanceType = "t3.medium"
+toolsInstanceType = "t3.small"
+
+metalAMI = "ami-02eac2c0129f6376b"
+proxyAMI = "ami-02eac2c0129f6376b"
+jumpAMI = "ami-02eac2c0129f6376b"
+toolsAMI = "ami-0de53d8956e8dcf80"

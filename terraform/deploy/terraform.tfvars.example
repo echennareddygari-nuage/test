@@ -1,0 +1,49 @@
+# Copy (do not move) this file to terraform.tfvars
+# It WILL NOT be tracked by git, and should include local information for deployment
+# Update fields as required for region and deployment type
+
+# THESE VALUES MUST BE UNIQUE
+projectName = "stageHostedWL01"
+internalFQDN = "hvns-stage.internal"
+eksClusterName = "eksOps-stage"
+vsc01EIP = ""
+vsc02EIP = ""
+vsc03EIP = ""
+vsc04EIP = ""
+## END UNIQUE VALUES
+
+nuageVersion = "5_4_1"
+
+awsAccessKey = "AKIAIAGWZBJZL46CNI6A"
+awsSecretKey = "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"
+awsRegion = "us-east-1"
+awsAZ1 = "us-east-1a"
+awsAZ2 = "us-east-1b"
+awsAZ3 = "us-east-1c"
+
+# All three variables MUST be declared but can be empty
+nokiaProxyCIDR1 = "135.245.48.0/24"
+nokiaProxyCIDR2 = "62.48.242.0/24"
+
+awsKeyName = "dnovosel_hvns_test"
+
+metalInstanceType = "t2.micro"
+proxyInstanceType = "t2.micro"
+eksInstanceType = "t2.large"
+jumpInstanceType = "t3.medium"
+toolsInstanceType = "t3.small"
+webfilterInstanceType = "m4.2xlarge"
+
+metalAMI = "ami-02eac2c0129f6376b"
+proxyAMI = "ami-02eac2c0129f6376b"
+jumpAMI = "ami-02eac2c0129f6376b"
+toolsAMI = "ami-0de53d8956e8dcf80"
+webfilterAMI = "ami-04b7b89b0eacbf76b"
+
+# EKS SPECIFIC VARIABLES
+# These values must be changed in tandem...AMI version is matched to kuberntes version AND AWS region
+# see the table here to find the right values... https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
+
+eksVersion = "1.13"                           # These two values are correct defaults for us-east-1
+eksWorkerAMI = "ami-0d3998d69ebe9b214"        # Version only needs major.minor (i.e. 1.13, 1.14, etc)
+## END of EKS SPECIFIC VARIABLES

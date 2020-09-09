@@ -1,0 +1,105 @@
+# ---
+# This task deploys all monitoring tools application in the EKS cluster
+
+- name: Create a local directory to store the k8s app config files
+  file: 
+    path: /home/software/k8s
+    state: directory
+    owner: centos
+    mode: 0755
+  become: yes
+
+- name: Copy the k8s app config files to the expected location
+  copy:
+    src: "{{ item }}"
+    dest: /home/software/k8s
+    owner: centos
+    mode: 0755
+  with_fileglob:
+    - "*.yml"
+  become: yes
+
+- name: Deploy Zabbix data service in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/zabbix-data-svc.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Zabbix web service in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/zabbix-web-svc.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Zabbix remaining objects in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/zabbix-allin1-prod.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Grafana service in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/grafana-svc.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Grafana remaining objects in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/grafana-allin1-prod.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+
+- name: Deploy MongoDb in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/mongodb-allin1-prod.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Elastic search in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/elastic-allin1-prod.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Graylog web service in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/graylog-web-svc.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Graylog ingest service in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/graylog-ingest-svc.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+  
+- name: Deploy Graylog in k8s
+  k8s:
+    state: present
+    src: /home/software/k8s/graylog-allin1-prod.yml
+    kubeconfig: ~/.kube/config
+    namespace: default
+
+# Add pause to allow time for instances to be generated.
+- name: Wait until "kubectl get svc" command returns 5 services with assigned load balancer FQDNs (or timeout after 60 sec)
+  shell: "kubectl get svc | grep internal- | wc -l"
+  register: cmd_res
+  retries: 6
+  delay: 10
+  until: cmd_res.stdout|int == 5
+
+# Print a little bit of helpful trobuleshooting info in case previosu task fails
+- debug:
+    msg: 
+      - "If the previous task fails it is likely we have exceeded our quota in this project for load balancers."
+      - "Check AWS for old orphaned load balancers and delete any not in use, then rerun the playbook."
+      - "Tip: Run the command 'kubectl get svcs' on the jump host to see which services have not yet acquired an load balancer."

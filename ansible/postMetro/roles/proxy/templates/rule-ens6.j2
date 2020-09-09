@@ -1,0 +1,6 @@
+{% if "proxy01" in inventory_hostname %}
+from {{ proxy01.route_sub.ens6 }}/24 table control
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+from {{ proxy02.route_sub.ens6 }}/24 table control
+{% endif %}

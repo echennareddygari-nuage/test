@@ -1,0 +1,296 @@
+global
+        maxconn 4096
+        user haproxy
+        group haproxy
+        nbproc 1
+        log 127.0.0.1:1514 local0
+        stats socket /var/run/haproxy.sock mode 666 level user
+
+
+resolvers awsvpc
+        nameserver dns1 {{ dns.ip }}:53
+        resolve_retries       30
+        timeout retry         1s
+        hold valid           10s
+
+defaults
+        log   global
+        option   httplog
+        mode   http
+        retries   3
+        option redispatch
+        maxconn   2000
+        timeout   connect 5000
+        timeout   client 150000
+        timeout   server 150000
+
+##############################
+# SD WAN Portal Access
+##############################
+frontend frontend_web_https
+{% if "proxy01" in inventory_hostname %}
+        bind {{ proxy01.ip.ens6 }}:443
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+        bind {{ proxy02.ip.ens6 }}:443 
+{% endif %}
+#       bind 10.100.2.192:443 ssl crt /opt/proxy/config/keys/{{ public_fqdn }}.pem
+        mode tcp
+        default_backend backend_web
+
+backend backend_web
+        mode tcp
+        balance source
+        server portal1 portal01.{{ host_domain }}:443 weight 1 maxconn 512 check
+        server portal2 portal02.{{ host_domain }}:443 weight 1 maxconn 512 check
+        server portal3 portal03.{{ host_domain }}:443 weight 1 maxconn 512 check
+
+
+##############################
+# Monitoring tools web access
+#
+# This only allows the client certificate which is preloaded on the image from the BootstrapRootCA
+##############################
+frontend zabbix_web_https
+{% if "proxy01" in inventory_hostname %}
+        bind {{ proxy01.ip.ens6 }}:3001 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+        bind {{ proxy02.ip.ens6 }}:3001 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+        default_backend zabbix_web
+
+backend zabbix_web
+        mode http
+        server zabbix zabbix.{{ host_domain }}:8980
+
+frontend grafana_web_https
+{% if "proxy01" in inventory_hostname %}
+        bind {{ proxy01.ip.ens6 }}:3000 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+        bind {{ proxy02.ip.ens6 }}:3000 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+        default_backend grafana_web
+
+backend grafana_web
+        mode http
+        server  grafana grafana.{{ host_domain }}:3000
+
+frontend graylog_web_https
+{% if "proxy01" in inventory_hostname %}
+        bind {{ proxy01.ip.ens6 }}:3002 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+        bind {{ proxy02.ip.ens6 }}:3002 ssl crt /opt/proxy/config/keys/proxyCert.pem no-sslv3 no-tlsv10 no-tlsv11
+{% endif %}
+        default_backend graylog_web
+
+backend graylog_web
+        mode http
+        server graylog  graylog.{{ host_domain }}:9000
+
+frontend vsc_syslog_tcp
+        mode tcp
+{% if "proxy01" in inventory_hostname %}
+        bind {{ proxy01.ip.ens6 }}:514 
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+        bind {{ proxy02.ip.ens6 }}:514
+{% endif %}
+        default_backend vsc_syslog
+
+backend vsc_syslog
+        mode tcp
+        server graylog-ingest graylog-data.{{ host_domain }}:514
+
+##############################
+# Bootstrap Endpoint
+#
+# This only allows the client certificate which is preloaded on the image from the BootstrapRootCA
+##############################
+frontend bootstrap
+   mode http
+   bind 0.0.0.0:12443 ssl crt /opt/proxy/config/keys/proxy-bootstrap-combined.pem ca-file /opt/proxy/config/keys/BootstrapCA.pem verify required
+   bind :::12443 ssl crt /opt/proxy/config/keys/proxy-bootstrap-combined.pem ca-file /opt/proxy/config/keys/BootstrapCA.pem verify required
+
+   http-request set-header X-SSL                       %[ssl_fc]
+   http-request set-header X-SSL-Client-Verify         %[ssl_c_verify]
+   http-request set-header X-SSL-Client-SHA1           %{+Q}[ssl_c_sha1]
+   http-request set-header X-SSL-Client-DN             %{+Q}[ssl_c_s_dn]
+   http-request set-header X-SSL-Client-CN             %{+Q}[ssl_c_s_dn(cn)]
+   http-request set-header X-SSL-Client-UID            %{+Q}[ssl_c_s_dn(uid)]
+   http-request set-header X-SSL-Client-ORG            %{+Q}[ssl_c_s_dn(o)]
+   http-request set-header X-SSL-Issuer-CN             %{+Q}[ssl_c_i_dn(cn)]
+   http-request set-header X-SSL-Issuer                %{+Q}[ssl_c_i_dn]
+   http-request set-header X-SSL-Client-Not-Before     %{+Q}[ssl_c_notbefore]
+   http-request set-header X-SSL-Client-Not-After      %{+Q}[ssl_c_notafter]
+   capture response header X-SSL-Client-CN len 100
+
+   # Ensure that a Bootstrap Request can only hit the bootstraprequests url of VSD
+   #acl acl_bootstrap url_reg /gateways/.+/bootstraprequests
+   #use_backend vsd if acl_bootstrap
+
+   use_backend noaccess unless { ssl_c_verify 0 }
+   use_backend vsd if { ssl_fc_has_crt }
+   default_backend noaccess
+
+
+##############################
+# Config Endpoint
+#
+# This only allows the client certificate which is authenticated via the Bootstrap process and signed by VSPCA
+##############################
+frontend config
+   mode http
+   bind 0.0.0.0:11443 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+   bind :::11443 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+
+   http-request set-header X-SSL                       %[ssl_fc]
+   http-request set-header X-SSL-Client-Verify         %[ssl_c_verify]
+   http-request set-header X-SSL-Client-SHA1           %{+Q}[ssl_c_sha1]
+   http-request set-header X-SSL-Client-DN             %{+Q}[ssl_c_s_dn]
+   http-request set-header X-SSL-Client-CN             %{+Q}[ssl_c_s_dn(cn)]
+   http-request set-header X-SSL-Client-UID            %{+Q}[ssl_c_s_dn(uid)]
+   http-request set-header X-SSL-Client-ORG            %{+Q}[ssl_c_s_dn(o)]
+   http-request set-header X-SSL-Issuer-CN             %{+Q}[ssl_c_i_dn(cn)]
+   http-request set-header X-SSL-Issuer                %{+Q}[ssl_c_i_dn]
+   http-request set-header X-SSL-Client-Not-Before     %{+Q}[ssl_c_notbefore]
+   http-request set-header X-SSL-Client-Not-After      %{+Q}[ssl_c_notafter]
+   capture response header X-SSL-Client-CN len 100
+
+   # Ensure that a Config Request can only hit the configrequests url of VSD
+   #acl acl_config url_reg /nsgateways/.+/infraconfig
+   #use_backend vsd if acl_config
+
+   use_backend noaccess unless { ssl_c_verify 0 }
+   use_backend vsd2 if { ssl_fc_has_crt }
+   default_backend noaccess
+
+##############################
+# VSD Client Authentication Backend
+#
+# This endpoint is setup to allow client ssl authentication from VSPCA signed certs
+##############################
+backend vsd
+   mode http
+   #
+   # Note: '<vsd01-fqdn>:7443' will be replaced by install to '<vsdClusterDnsEntry>:7443'
+   #
+   server vsd1 vsd01.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-preCert.pem ca-file /opt/proxy/config/keys/proxy-pre-CA.pem check
+   server vsd2 vsd02.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-preCert.pem ca-file /opt/proxy/config/keys/proxy-pre-CA.pem check
+   server vsd3 vsd03.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-preCert.pem ca-file /opt/proxy/config/keys/proxy-pre-CA.pem check
+
+
+##############################
+# VSD Client Authentication Backend
+#
+# This endpoint is setup to allow client ssl authentication from VSPCA signed certs
+##############################
+backend vsd2
+   mode http
+   #
+   # Note: <vsd01-fqdn>:7443' will be replaced by install to '<vsdClusterDnsEntry>:7443'
+   #
+   server vsd1 vsd01.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-postCert.pem ca-file /opt/proxy/config/keys/proxy-post-CA.pem check
+   server vsd2 vsd02.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-postCert.pem ca-file /opt/proxy/config/keys/proxy-post-CA.pem check
+   server vsd3 vsd03.{{ host_domain }}:7443 ssl crt /opt/proxy/config/keys/proxy-postCert.pem ca-file /opt/proxy/config/keys/proxy-post-CA.pem check
+##############################
+# Stats Endpoint New
+#
+# This only allows the client certificate which is authenticated via the Bootstrap process and signed by VSPCA to send stats to VSD
+##############################
+frontend statsconfignew
+   mode tcp
+   bind 0.0.0.0:39090 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+   bind :::39090 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+   use_backend vsdstatnew
+   default_backend noaccess
+
+backend vsdstatnew
+   mode tcp
+   #
+   # Note: 'vsd: 39090 will be replaced by install to '<vsdClusterDnsEntry>:7443'
+   #
+   balance source
+   server vsd1 vsd01.{{ host_domain }}:39090
+   server vsd2 vsd02.{{ host_domain }}:39090
+   server vsd3 vsd03.{{ host_domain }}:39090
+
+#######################################################################################
+# Messaging Endpoint
+#
+# This only allows the client certificate signed by VSPCA
+#######################################################################################
+frontend msgconfig
+   mode tcp
+   bind 0.0.0.0:61613 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+   bind :::61613 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+   use_backend vsdjms
+   default_backend noaccess
+
+#######################################################################################
+# VSD Client Authentication Backend
+#
+# This endpoint is not setup to use ssl authentication
+#######################################################################################
+backend vsdjms
+   mode tcp
+   #
+   # Note: 'vsd:61613 will be replaced by install to '<vsdClusterDnsEntry>:61613'
+   #
+   balance source
+   server vsd1 vsd01.{{ host_domain }}:61613
+   server vsd2 vsd02.{{ host_domain }}:61613
+   server vsd3 vsd03.{{ host_domain }}:61613
+
+
+##############################
+# No Access Backend
+#
+# Display error page here
+##############################
+backend noaccess
+   mode http
+   #redirect location /certificate-expired.html if { ssl_c_verify 10 } ! { path /certificate-expired.html }
+   #redirect location /certificate-revoked.html if { ssl_c_verify 23 } ! { path /certificate-revoked.html }
+   #redirect location /other-certificate-error.html unless { ssl_c_verify 0 } ! { path /certificate-error.html }
+   server local localhost:80 check
+
+
+#######################################################################################
+# WEBFILTERING 
+#
+# This endpoint is not setup to use ssl authentication
+#######################################################################################
+
+frontend webfilterfrontdownloadssl
+       mode tcp
+       bind 0.0.0.0:8080 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+       use_backend webfilterbackdownloadssl
+       default_backend noaccess
+
+backend webfilterbackdownloadssl
+       mode tcp
+       balance roundrobin
+       #Replace the hostname and ip-addresses of the web filtering VM
+       server webfilter1 100.70.1.30:7443 port 7443 check check-ssl ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem inter 60s
+       server webfilter2 100.70.2.30:7443 port 7443 check check-ssl ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem inter 60s
+       option httpchk GET /nuage/incompass/health
+       http-check expect status 200
+
+
+
+
+frontend webfilerProtobufFront
+      mode tcp
+      bind 0.0.0.0:9090 ssl crt /opt/proxy/config/keys/proxyCert.pem ca-file /opt/proxy/config/keys/proxy-CA.pem verify required crl-file /etc/haproxy/crl.pem
+      use_backend webfilterProtobufserver
+      default_backend noaccess
+   backend webfilterProtobufserver
+      mode tcp
+      #Replace to hostname to hostname of webFilter vm
+      server webfilterp1 100.70.1.30:22222 check port 7443 check-ssl verify none inter 60s
+      server webfilterp2 100.70.2.30:22222 check port 7443 check-ssl verify none inter 60s
+      option httpchk GET /nuage/incompass/health
+      http-check expect status 200

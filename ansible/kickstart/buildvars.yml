@@ -1,0 +1,7 @@
+# This playbook creates all required variables templates file for all subsequent 
+# terraform and ansible scripts required to deploy hvns
+
+---
+- hosts: localhost
+  roles:
+    - terraform

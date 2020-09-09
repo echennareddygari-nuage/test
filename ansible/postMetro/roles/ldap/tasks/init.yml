@@ -1,0 +1,15 @@
+---
+
+- name: Install the required LDAP packages
+  yum:
+    name: "{{ itmes }}"
+    state: latest
+  with_items:
+    - openldap-clients
+    - realmd
+    - adcli
+    - sssd
+    - krb5-workstation
+    - samba-common
+    - samba-common-tools
+  become: true

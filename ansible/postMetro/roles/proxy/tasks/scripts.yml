@@ -1,0 +1,20 @@
+---
+# Copy any generic script files required for the haproxy server
+
+- name: Create a scripts directory on proxy server if it doesn not exist
+  file:
+    path: "{{ item }}"
+    state: directory 
+  with_items:
+    - /home/centos/scripts/cert_check
+  
+- name: Copy cert_check script to proxy  
+  copy: 
+    owner: centos 
+    group: centos 
+    mode: 755    
+    src: cert_check.py
+    dest: /home/centos/scripts/cert_check/cert_check.py
+
+
+

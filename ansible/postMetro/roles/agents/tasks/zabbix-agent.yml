@@ -1,0 +1,42 @@
+---
+# The following tasks install the Zabbix agent package and configures it
+
+  - name: Install the zabbix agent repo
+    yum:
+      name: "{{ zabbix.agentrepo }}"
+      state: present
+    become: true
+    ignore_errors: yes
+  
+  - name: Install the zabbix agent rpm from a remote repo
+    yum:
+      name: "{{ zabbix.agentrepo }}"
+      state: present
+    become: true
+    ignore_errors: yes
+
+  - name: Start and enable the Zabbix agent
+    service: 
+      name: zabbix-agent
+      state: started 
+      enabled: yes
+    become: true
+    
+  - name: Install the zabbix sender rpm from a remote repo
+    yum:
+      name: "{{ zabbix.senderrepo }}"
+      state: present
+    become: true
+    ignore_errors: yes
+   
+  - name: Configure the Zabbix agent with the template file
+    template:
+      src: zabbix_agentd.conf.j2
+      dest: /etc/zabbix/zabbix_agentd.conf
+      owner: root
+      group: root
+      mode: 0644
+    become: true
+    notify: restart zabbix-agent
+
+

@@ -1,0 +1,18 @@
+---  
+# The following include files contain all required steps to install
+# haproxy and associated applications and configurations
+
+#- import_tasks: openSG.yml
+#  when:
+#    "'proxy' not in inventory_hostname"  
+- import_tasks: misc.yml
+- import_tasks: packages.yml
+- import_tasks: networking.yml
+- import_tasks: haproxy.yml
+- import_tasks: httpd.yml
+#- import_tasks: keepalived.yml
+- import_tasks: notification-app.yml
+- import_tasks: rsyslog.yml
+#- import_tasks: closeSG.yml
+#  when:
+#    "'proxy' not in inventory_hostname"  

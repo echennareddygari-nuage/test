@@ -1,0 +1,13 @@
+---
+
+- name: Start and enable rsyslog service
+  systemd:
+    name: rsyslog
+    state: started
+    enabled: yes
+
+- name: Copy the haproxy specific rsyslog configuration for local file event logging
+  copy:
+    src: haproxy-syslog.conf
+    dest: /etc/rsyslog.d/haproxy-syslog.conf
+  notify: restart rsyslog

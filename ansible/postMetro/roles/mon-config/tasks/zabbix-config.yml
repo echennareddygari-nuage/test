@@ -1,0 +1,142 @@
+---
+# This task configures a new Zabbix system seting using the avaialble modules
+# It set configuration not coverd by the Zabbix config import task.
+# There may be dependencies in the order of object creation...do not change unless
+# you know what you are doing.
+
+# Api based user auth token generation 
+- name: Generate an auth token for all subsequent API requests
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: '{"jsonrpc": "2.0", "method": "user.login", "params": {"user": "{{ zabbix.apiUser }}", "password": "{{ zabbix.apiPass }}"}, "id": 1, "auth": null}'
+    body_format: json
+  register: user_auth
+
+# Set the token to a variable for re-use
+- name: Extract the auth token and set as  variable
+  set_fact:
+    token: "{{ user_auth.json.result }}"
+
+
+#- name: Get the id of the opsguest host group  
+#  uri:
+#    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+#    method: POST
+#    body: "{{ lookup('template', 'hostgroup_get_opsguest.j2', convert_data=False) }}"
+#    body_format: json
+#  register: opsguest_hostgroup
+
+
+# Api based user/usergroup create 
+- name: Create a opsguest user group (opsguest) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'usergroup_create_opsguest.j2', convert_data=False) }}"
+    body_format: json
+  
+- name: Get the opsguest user group id via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'usergroup_get_opsguest.j2', convert_data=False) }}"
+    body_format: json
+  register: opsguest_group
+
+- name: Create a opsguest user (opsguest) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_opsguest.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a zabbix email notifications user via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_notification.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a grafana data user (grafana) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_grafana.j2', convert_data=False) }}"
+    body_format: json
+
+# Api based macro create 
+- name: Create a global macro for monitoring mobile number via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_monmobile.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a global macro for ops mobile number via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_opsmobile.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a global macro for VSC SNMP ommunite string via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_snmp.j2', convert_data=False) }}"
+    body_format: json
+
+# Create trigger actions
+- name: Creating the email notification action
+  zabbix_action:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    name: "Send email alert when severity >= MAJOR"
+    event_source: 'trigger'
+    state: present
+    status: enabled
+    conditions:
+      - type: 'trigger_severity'
+        operator: '>='
+        value: 'high'
+    operations:
+      - type: send_message
+        subject: "ALERT -- Severity: {EVENT.SEVERITY} -- Host: {HOST.NAME} -- Problem: {EVENT.NAME}"
+        message: "{{ lookup('file', 'alert_message.txt') }}"
+        media_type: 'Email'
+        send_to_users: "{{ zabbix.notificationUser }}"
+      - type: remote_command
+        execute_on: agent
+        run_on_hosts: tools01.{{ host_domain }}
+        command_type: custom_script
+        command: 'sudo -u ec2-user /home/ec2-user/scripts/sns/send-aws-sns-sms.sh " Severity: {EVENT.SEVERITY} -- Host: {HOST.NAME} -- Problem: {EVENT.NAME}"'
+      
+
+- name: Creating the voicecall notification action
+  zabbix_action:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    name: "Send voicecall alert when severity >= MAJOR"
+    event_source: 'trigger'
+    state: present
+    status: enabled
+    conditions:
+      - type: 'trigger_severity'
+        operator: '>='
+        value: 'high'
+    operations:
+      - type: remote_command
+        execute_on: agent
+        run_on_hosts: tools01.{{ host_domain }}
+        command_type: custom_script
+        command: 'sudo -u ec2-user /home/ec2-user/scripts/pinpoint/send-voice-call.sh {$PT.OPSMOBILE} "{EVENT.SEVERITY} alert: {EVENT.NAME}"'
+      - type: remote_command
+        execute_on: agent
+        run_on_hosts: tools01.{{ host_domain }}
+        command_type: custom_script
+        command: 'sudo -u ec2-user /home/ec2-user/scripts/pinpoint/send-voice-call.sh {$PT.MONMOBILE} "{EVENT.SEVERITY} alert: {EVENT.NAME}"'
+
+

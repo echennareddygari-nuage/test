@@ -1,0 +1,15 @@
+BOOTPROTO=static
+DEVICE=ens5
+ONBOOT=yes
+TYPE=Ethernet
+{% if "proxy01" in inventory_hostname %}
+IPADDR="{{ proxy01.ip.ens5 }}"
+GATEWAY="{{ proxy01.gateway.ens5 }}"
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+IPADDR="{{ proxy02.ip.ens5 }}"
+GATEWAY="{{ proxy02.gateway.ens5 }}"
+{% endif %}
+NETMASK="255.255.255.0"
+DEFROUTE=yes
+NM_CONTROLLED="no"

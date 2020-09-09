@@ -1,0 +1,7 @@
+---
+
+- name: Copy the logroatate config for haproxy to correct location
+  copy:
+    src: haproxy
+    dest: /etc/logrotate.d/haproxy
+  notify: restart rsyslog

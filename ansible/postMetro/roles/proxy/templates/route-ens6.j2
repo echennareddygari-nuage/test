@@ -1,0 +1,8 @@
+{% if "proxy01" in inventory_hostname %}
+{{ proxy01.route_sub.ens6 }} dev ens6 table control
+default via {{ proxy01.gateway.ens6 }} table control
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+{{ proxy02.route_sub.ens6 }} dev ens6 table control
+default via {{ proxy02.gateway.ens6 }} table control
+{% endif %}

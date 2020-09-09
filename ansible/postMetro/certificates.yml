@@ -1,0 +1,4 @@
+---
+- hosts: vsd:elasticsearch:proxy:webfilter
+  roles:
+    - certificates

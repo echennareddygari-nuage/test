@@ -1,0 +1,34 @@
+---  
+# Thes tasks cove muiltple areas that require cleanup and prep across
+# several of the infrastructure servers. Most task only run against
+# specific hosts or single groups of hosts.\ determiend by the task import
+# conditions.
+
+# These tasks only apply to vsd01 server
+- import_tasks: create-certs.yml
+  when: 
+    "'vsd01' in inventory_hostname"
+
+- import_tasks: sync-certs-to-jump.yml
+  when: 
+    "'vsd01' in inventory_hostname"
+
+# These tasks only apply to elasticsearch servers
+- import_tasks: elastic-ssl.yml
+  when: 
+    "'es0' in inventory_hostname"
+
+# These tasks only apply to proxy servers
+- import_tasks: proxy-ssl.yml
+  when: 
+    "'proxy0' in inventory_hostname"
+
+# These tasks only apply to vsd01 servers
+- import_tasks: webfilter-ssl.yml
+  when:
+    "'webfilter0' in inventory_hostname"
+
+# These tasks only apply to vsd01 servers
+- import_tasks: vsd-users.yml
+  when: 
+    "'vsd01' in inventory_hostname"

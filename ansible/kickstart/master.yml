@@ -1,0 +1,5 @@
+---
+# file: master.yml
+# This playbook deploys everything that can be deployed fo the kickstart project.
+
+- import_playbook: buildvars.yml

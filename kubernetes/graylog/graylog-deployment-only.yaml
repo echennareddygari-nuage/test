@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: graylog-web
+  labels:
+    app: graylog-web
+spec:
+  template:
+    metadata:
+      labels:
+        app: graylog-web
+    spec:
+      containers:
+        - name: graylog
+          image: graylog/graylog:2.5
+          env:
+            - name: GRAYLOG_MONGODB_URI
+              value: mongodb://mongodb/graylog
+            - name : GRAYLOG_PASSWORD_SECRET
+              value: "fs3XAq7VCBFAs6iTzwPc33Duzv9g8GdAG9tMVuHz1dbGK1wVHjEgEuy1SkXVzSGw4Y0oBJtEyV793CRdXz9dhJ4EK9MdSmn2"
+            - name: GRAYLOG_ROOT_PASSWORD_SHA2
+              value: "ff560dbed7e3a4b03af5f38483019e0d5d1aed0e6a8f59bcdae33a1f1e77e522"
+            - name: GRAYLOG_WEB_ENDPOINT_URI
+              value: https://52.5.133.182:3002/api/
+            - name: GRAYLOG_REST_LISTEN_URI
+              value: http://0.0.0.0:9000/api/
+            - name: GRAYLOG_REST_TRANSPORT_URI
+              value: http://graylog.prod-hvns-na01.internal:9000/api/
+            - name: WEB_LISTEN_URI
+              value: http://0.0.0.0:9000/
+            - name: GRAYLOG_ELASTICSEARCH_HOSTS
+              value: "http://es-master-0.elasticsearch-master:9200,http://es-master-1.elasticsearch-master:9200,http://es-master-2.elasticsearch-master:9200"
+            - name: GRAYLOG_IS_MASTER
+              value: "false"
+            - name: GRAYLOG_TRANSPORT_EMAIL_ENABLED
+              value: "true"
+            - name: GRAYLOG_TRANSPORT_EMAIL_PROTOCOL
+              value: "smtp"
+            - name: GRAYLOG_TRANSPORT_EMAIL_HOSTNAME
+              value: "email-smtp.us-east-1.amazonaws.com"
+            - name: GRAYLOG_TRANSPORT_EMAIL_PORT
+              value: "587"
+            - name: GRAYLOG_TRANSPORT_EMAIL_USE_AUTH
+              value: "true"
+            - name: GRAYLOG_TRANSPORT_EMAIL_AUTH_USERNAME
+              value: "AKIAJ6IXTTNFZRSAT4PA"
+            - name: GRAYLOG_TRANSPORT_EMAIL_AUTH_PASSWORD
+              value: "BPVQjbocRo2oEJ8j0pAOkvbe3fNT92ky0Pwncu41AXcL"
+            - name: GRAYLOG_TRANSPORT_EMAIL_USE_TLS
+              value: "true"
+            - name: GRAYLOG_TRANSPORT_EMAIL_USE_SSL
+              value: "false"
+            - name: GRAYLOG_TRANSPORT_EMAIL_FROM_EMAIL
+              value: "hosted@nuagenetworks.net"
+             
+#            - name: GRAYLOG_CONTENT_PACKS_AUTO_LOAD
+#              value: "grok-patterns.json,udp-input-graylog.json"
+          ports:
+            - containerPort: 9000
+#          volumeMounts:
+#            - name: content-packs
+#              mountPath: /usr/share/graylog/data/contentpacks
+#      volumes:
+#        - name: content-packs
+#          emptyDir: {}

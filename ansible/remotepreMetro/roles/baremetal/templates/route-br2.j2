@@ -1,0 +1,12 @@
+{% if "metal01" in inventory_hostname %}
+{{ metal01.routes.br2 }} dev br2 table mpls1
+{{ metal01.routes.br2 }} dev br2 table mpls2
+{{ metal01.routes.br2 }} dev br2 table mpls3
+{{ metal01.routes.br2 }} dev br2 table mpls4
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+{{ metal02.routes.br2 }} dev br2 table mpls1
+{{ metal02.routes.br2 }} dev br2 table mpls2
+{{ metal02.routes.br2 }} dev br2 table mpls3
+{{ metal02.routes.br2 }} dev br2 table mpls4
+{% endif %}

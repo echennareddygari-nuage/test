@@ -1,0 +1,118 @@
+---
+#  This task exports json formatted data for templates and hosts and saves
+# it to file in the postMetro/mon-config/files directory so it can be used
+# to configure a new system.
+
+# Run this non destrctive/non-changing playbook on a curent production system
+# to update the Zabbix config files when a change ahs been made that needs to
+# be ported forward to a newly depoyed system.  (push changes back to git master)
+
+# Create a directory for storing exported files if not existing
+- name: Create the directory for storing Zabbix export files
+  file:
+    path: "{{ zabbix.export_dir }}"
+    state: directory
+    mode: 0755
+    owner: centos
+    group: centos
+  become: true
+
+# Api based user auth token generation 
+- name: Generate an auth token for all subsequent API requests
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: '{"jsonrpc": "2.0", "method": "user.login", "params": {"user": "{{ zabbix.apiUser }}", "password": "{{ zabbix.apiPass }}"}, "id": 1, "auth": null}'
+    body_format: json
+  register: user_auth
+
+# Set the token to a variable for re-use
+- name: Extract the auth token and set as variable
+  set_fact:
+    token: "{{ user_auth.json.result }}"
+
+# export all the template info to file
+- name: Get template ids for templates with WL=Yes tags only
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'template_get.j2', convert_data=False) }}"
+    body_format: json
+  register: template_id_get
+
+- name: Set a variable to just the list of ids from the template get request
+  set_fact:
+    template_id_list: "{{ template_id_get.json.result }}"
+
+- name: Extract the template (in json format) for each of the ids in the list and register the output
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'template_export.j2', convert_data=False) }}"
+    body_format: json
+  register: template_export
+  with_items: "{{ template_id_list }}"
+
+- name:  Copy each template to file as an original backup
+  copy:
+    content: "{{ item.json.result }}"
+    dest: "{{ zabbix.export_dir }}/z_orig_template_{{ item.item.templateid }}.json"
+  with_items: "{{ template_export.results }}"
+  loop_control:
+    label: "{{ item.item.templateid }}"
+
+- name:  Copy a second template to file as an dummy version 
+  copy:
+    content: "{{ item.json.result }}"
+    dest: "{{ zabbix.export_dir }}/z_dummy_template_{{ item.item.templateid }}.json"
+  with_items: "{{ template_export.results }}"
+  loop_control:
+    label: "{{ item.item.templateid }}"
+
+# Export all the host info to file
+- name: Get host ids for hosts with WL=Yes tags only
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'host_get.j2', convert_data=False) }}"
+    body_format: json
+  register: host_id_get
+
+- name: Set a variable to just the list of ids from the host get request
+  set_fact:
+    host_id_list: "{{ host_id_get.json.result }}"
+
+- name: Extract the host (in json format) for each of the ids in the list and register the output
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'host_export.j2', convert_data=False) }}"
+    body_format: json
+  register: host_export
+  with_items: "{{ host_id_list }}"
+
+- name:  Copy each host to file as an orginal backup
+  copy:
+    content: "{{ item.json.result }}"
+    dest: "{{ zabbix.export_dir }}/z_orig_host_{{ item.item.hostid }}.json"
+  with_items: "{{ host_export.results }}"
+  loop_control:
+    label: "{{ item.item.hostid }}"
+
+- name:  Copy each host a second time as a dummy version
+  copy:
+    content: "{{ item.json.result }}"
+    dest: "{{ zabbix.export_dir }}/z_dummy_host_{{ item.item.hostid }}.json"
+  with_items: "{{ host_export.results }}"
+  loop_control:
+    label: "{{ item.item.hostid }}"
+
+# Swap out the domain for the system where the backup was taken and replace it with 
+# a dummy value that can be swapped out again later
+- name: Swap out domain in all config files for a dummy value
+  replace:
+    path: "{{ item }}"
+    regexp: "{{ zabbix.domain_swap }}"
+    replace: "{{ zabbix.dummy_domain }}"
+  with_fileglob: "{{ zabbix.export_dir }}/z_dummy_*.json"
+    

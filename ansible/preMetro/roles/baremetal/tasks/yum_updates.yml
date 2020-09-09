@@ -1,0 +1,35 @@
+---
+# This task installs packages then enables and starts required services
+#
+
+  - name: Install all required packages 
+    yum: 
+      name: "{{ packages }}"
+      state: latest 
+      update_cache: yes
+    vars:
+      packages:
+        - qemu-kvm
+        - libvirt
+        - bridge-utils
+        - libguestfs-tools
+        - libvirt-python
+        - firewalld
+        - ntp
+        - tcpdump
+        - bind-utils
+        - squid
+        - python-firewall
+   
+  - name: Start and enable all required services
+    systemd:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - libvirtd
+      - ntpd
+      - firewalld
+      - squid
+
+  

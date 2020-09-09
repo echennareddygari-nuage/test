@@ -1,0 +1,29 @@
+
+---
+# Set up ssl certs for webfilter servers
+
+- name: Copy the webfilter01.jks files to the webfilter01 server
+  copy:
+    src: "{{ item }}"
+    dest: /opt/vsd/webfilter/conf/ 
+  with_fileglob:
+    - "/home/software/certs/webfilter01.jks"
+  when:
+    "'webfilter01' in inventory_hostname"
+
+
+- name: Copy the webfilter02.jks files to the webfilter02 server
+  copy:
+    src: "{{ item }}"
+    dest: /opt/vsd/webfilter/conf/
+  with_fileglob:
+    - "/home/software/certs/webfilter02.jks"
+  when:
+    "'webfilter02' in inventory_hostname"
+
+- name: Copy the truststore.jks  files to the webfilter Servers
+  copy:
+    src: "{{ item }}"
+    dest: /opt/vsd/webfilter/conf/
+  with_fileglob:
+    - "/home/software/certs/truststore.jks"

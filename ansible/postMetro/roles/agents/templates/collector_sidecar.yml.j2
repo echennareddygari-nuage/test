@@ -1,0 +1,46 @@
+server_url: {{ graylog.api_url }}
+update_interval: 10
+tls_skip_verify: true
+send_status: true
+list_log_files: /var/log
+node_id: {{ ansible_host }}
+collector_id: file:/etc/graylog/collector-sidecar/collector-id
+log_path: /var/log/graylog/collector-sidecar
+log_rotation_time: 86400
+log_max_age: 604800
+tags:
+    - linux 
+{% if "vsd" in ansible_host %}
+    - vsd
+    - zabbix
+{% endif %}
+{% if "es" in ansible_host %}
+    - es 
+    - zabbix
+{% endif %} 
+{% if "proxy" in ansible_host %}
+    - proxy
+    - zabbix
+{% endif %}
+{% if "portal" in ansible_host %}
+    - portal 
+    - zabbix
+{% endif %}
+{% if "metal" in ansible_host %}
+    - metal
+    - zabbix
+{% endif %}
+{% if "tools" in ansible_host %}
+    - tools 
+    - zabbix
+{% endif %}
+{% if "webfilter" in ansible_host %}
+    - webfilter 
+    - zabbix
+{% endif %}
+
+backends:
+    - name: filebeat
+      enabled: true
+      binary_path: /usr/bin/filebeat
+      configuration_path: /etc/graylog/collector-sidecar/generated/filebeat.yml

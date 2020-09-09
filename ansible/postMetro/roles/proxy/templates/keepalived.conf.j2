@@ -1,0 +1,42 @@
+vrrp_script check_haproxy
+{
+    script "pidof haproxy"
+    interval 5
+    fall 2
+    rise 2
+}
+
+vrrp_instance VI_1
+{
+    debug 0
+    interface ens5
+    state MASTER
+    virtual_router_id 1
+{% if "proxy01" in inventory_hostname %}
+    priority 110
+    unicast_src_ip {{ proxy01.ip.ens5 }}
+
+    unicast_peer
+    {
+        {{ proxy02.ip.ens5 }}
+    }
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+    priority 100
+    unicast_src_ip {{ proxy02.ip.ens5 }}
+
+    unicast_peer
+    {
+        {{ proxy01.ip.ens5 }}
+    }
+{% endif %}
+
+    track_script
+    {
+        check_haproxy
+    }
+
+    notify_master /etc/keepalived/failover.sh
+    notify /etc/keepalived/state.sh
+}
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=MonitJson
+After=syslog.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root
+
+# Change the following to /root/monitjson.py -z <zabbix_address> if you wanna use zabbix mode
+ExecStart=/root/monitjson.py -d
+StandardOutput=syslog
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target

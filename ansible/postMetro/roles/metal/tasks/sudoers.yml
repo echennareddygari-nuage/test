@@ -1,0 +1,10 @@
+---
+# Copy sudoers config file for zabbix user to allow script execution by agent
+
+- name: Copy zabbix sudoers file 
+  copy: 
+    owner: root  
+    group: root 
+    mode: '0644'    
+    src: zabbix_nvme_smart
+    dest: /etc/sudoers.d/zabbix_nvme_smart

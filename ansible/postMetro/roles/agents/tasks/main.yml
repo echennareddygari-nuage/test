@@ -1,0 +1,7 @@
+---  
+# The following include files contain required config/sterps/file to instal 
+# both zabbix and graylog agents on all relevant nodes
+
+- import_tasks: zabbix-agent.yml
+- import_tasks: graylog-agent.yml
+- import_tasks: iptables.yml

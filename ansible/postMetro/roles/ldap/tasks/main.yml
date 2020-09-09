@@ -1,0 +1,4 @@
+---
+
+- import_tasks: init.yml
+- import_tasks: ldap_config.yml

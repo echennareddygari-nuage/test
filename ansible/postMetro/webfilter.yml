@@ -1,0 +1,4 @@
+---
+- hosts: webfilter
+  roles:
+    - webfilter

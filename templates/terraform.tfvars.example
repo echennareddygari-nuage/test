@@ -1,0 +1,201 @@
+# Copy (do not move) this file to terraform.tfvars
+# It WILL NOT be tracked by git, and should include local information for deployment
+# Update fields as required for region and deployment type
+
+
+# For Hybrid Cloud - Use .aws/credentials from Nokia generated token.  Do not set awsAccessKey/awsSecretKey
+
+awsAccessKey = ""
+awsSecretKey = ""
+
+
+
+###############################################
+#       TEST ACCOUNT - Default Values
+###############################################
+
+
+################ AMI Values ################
+metalAMI = "ami-02eac2c0129f6376b"
+proxyAMI = "ami-02eac2c0129f6376b"
+jumpAMI = "ami-02eac2c0129f6376b"
+toolsAMI = "ami-0de53d8956e8dcf80"
+webfilterAMI = "ami-08ded65fcefecdaf1"
+eksWorkerAMI = "ami-0d3998d69ebe9b214"
+NUHAMI = "ami-070fb2b0fb89ae625"
+remoteMetalAMI = "ami-02eac2c0129f6376b"
+
+################ Instance Type Values ################
+metalInstanceType = "i3.metal"
+proxyInstanceType = "m5.large"
+eksInstanceType = "m5.xlarge"
+jumpInstanceType = "t3.medium"
+toolsInstanceType = "t3.small"
+webfilterInstanceType = "m4.2xlarge"
+NUHInstanceType = "m4.xlarge"
+remoteMetalInstanceType = "c5n.metal"
+
+################ Project specific (to be aligned with Ansible file) ################
+projectName = "devHostedWL01"
+internalFQDN = "hvns-dev.internal"
+eksClusterName = "eksOps-dev"
+aws-account = "917414254047"
+
+
+################ Specific to Test Account  ################
+vsc01EIP = "18.235.159.23"
+vsc02EIP = "35.169.135.186"
+vsc03EIP = "54.211.125.25"
+vsc04EIP = "18.208.43.211"
+
+
+awsRegion = "us-east-1"
+awsAZ1 = "us-east-1a"
+awsAZ2 = "us-east-1b"
+awsAZ3 = "us-east-1c"
+
+################ Remote VPC number and Metal numbers #################
+remotenumber="0"
+remotemetal1="6"
+remotemetal2="7"
+
+
+awsKeyName = "prodHostedWL-NA01"
+
+nuage-files-s3bucket = "dev-na01-hvns-apac01.internal"
+
+
+###########################################################
+
+
+###########################################################
+# US-NA-1 Values Production
+###########################################################
+
+################ AMI Values ################
+# metalAMI = "ami-02eac2c0129f6376b"
+# proxyAMI = "ami-02eac2c0129f6376b"
+# jumpAMI = "ami-02eac2c0129f6376b"
+# toolsAMI = "ami-0de53d8956e8dcf80"
+# webfilterAMI = "ami-04b7b89b0eacbf76b"
+# eksWorkerAMI = "ami-0d3998d69ebe9b214"
+# NUHAMI = "ami-0549acccc9687eb0a"
+# remoteMetalAMI = "ami-02eac2c0129f6376b"
+
+################ Instance Type Values ################
+# metalInstanceType = "i3.metal"
+# proxyInstanceType = "m5.large"
+# eksInstanceType = "m5.xlarge"
+# jumpInstanceType = "t3.medium"
+# toolsInstanceType = "t3.small"
+# webfilterInstanceType = "m4.2xlarge"
+# NUHInstanceType = "m4.xlarge"
+# remoteMetalInstanceType = "c5n.metal"
+
+
+################ Project specific (to be aligned with Ansible file) ################
+# projectName = "prodHostedWL-NA01-1"
+# internalFQDN = "prod-hvns-na01.internal"
+# eksClusterName = "eksOps-NA01"
+# aws-account = "104742821910"
+
+
+################ Specific to APAC Values ################
+# vsc01EIP = "3.208.115.47"
+# vsc02EIP = "3.209.177.187"
+# vsc03EIP = "3.209.222.216"
+# vsc04EIP = "3.209.240.188"
+
+# awsRegion = "us-east-1"
+# awsAZ1 = "us-east-1a"
+# awsAZ2 = "us-east-1b"
+# awsAZ3 = "us-east-1c"
+
+
+# awsKeyName = "prodHostedWL-NA01"
+
+# nuage-files-s3bucket = "prod-hvns-na01-nuage-files"
+
+################ Remote VPC number and Metal numbers #################
+#remotenumber="0"
+#remotemetal1="6"
+#remotemetal2="7"
+
+
+###########################################################
+
+
+
+###########################################################
+# AP-APAC-1 Values Production
+###########################################################
+
+################ AMI Values ################
+# metalAMI = "ami-0b4dd9d65556cac22"
+# proxyAMI = "ami-0b4dd9d65556cac22"
+# jumpAMI = "ami-0b4dd9d65556cac22"
+# toolsAMI = "ami-0b419c3a4b01d1859"
+# webfilterAMI = "ami-07b0cabdc5f10f55d"
+# eksWorkerAMI = "ami-06206d907abb34bbc"
+# NUHAMI="ami-065759b678bd8e645"
+# remoteMetalAMI = "ami-0b4dd9d65556cac22"
+
+################ Instance Type Values ################
+# metalInstanceType = "i3.metal"
+# proxyInstanceType = "m5.large"
+# eksInstanceType = "m5.xlarge"
+# jumpInstanceType = "t3.medium"
+# toolsInstanceType = "t3.small"
+# webfilterInstanceType = "m4.2xlarge"
+# NUHInstanceType = "m4.xlarge"
+# remoteMetalInstanceType = "c5n.metal"
+
+
+################ Project specific (to be aligned with Ansible file) ################
+# projectName = "prodHostedWL-APAC01"
+# internalFQDN = "prod-hvns-apac01.internal"
+# eksClusterName = "eksOps-APAC01"
+# aws-account = "790730990442"
+
+
+################ Specific to APAC Values ################
+# vsc01EIP = "52.76.150.171"
+# vsc02EIP = "52.74.12.82"
+# vsc03EIP = "3.0.34.139"
+# vsc04EIP = "54.179.181.42"
+
+# awsRegion = "ap-southeast-1"
+# awsAZ1 = "ap-southeast-1a"
+# awsAZ2 = "ap-southeast-1b"
+# awsAZ3 = "ap-southeast-1c"
+
+
+# awsKeyName = "prodHostedWL-APAC01"
+
+# nuage-files-s3bucket = "prod-hvns-apac01-nuage-files"
+
+################ Remote VPC number and Metal numbers #################
+#remotenumber="0"
+#remotemetal1="6"
+#remotemetal2="7"
+
+###########################################################
+
+
+#################   Common to all Regions  ########################
+
+
+# EKS SPECIFIC VARIABLES
+# These values must be changed in tandem...AMI version is matched to kuberntes version AND AWS region
+# see the table here to find the right values... https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
+
+eksVersion = "1.13"                           # These two values are correct defaults for us-east-1
+
+## END of EKS SPECIFIC VARIABLES
+
+# All three variables MUST be declared but can be empty
+nokiaProxyCIDR1 = "135.245.48.0/24"
+nokiaProxyCIDR2 = "62.48.242.0/24"
+
+# Nuage version
+nuageVersion = "5_4_1"

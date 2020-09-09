@@ -1,0 +1,36 @@
+
+# THESE VALUES MUST BE UNIQUE
+projectName: stageHostedWL01
+internalFQDN: hvns-stage.internal
+eksClusterName: eksOps-stage
+publicFQDN: stage01.hvns-test.com
+## The git clone directory (absolute path no trailing /)
+baseDir: /home/ec2-user/git/dnovosel_dev/nokia-hvns-local-terraform-test
+## END UNIQUE VALUES
+
+aws: 
+  # AWS Access and Secret Key ONLY required for non-hybrid cloud deployments
+  accessKey: 
+  secretKey: 
+  region: us-east-1
+  AZ1: us-east-1a
+  AZ2: us-east-1b
+  AZ3: us-east-1c
+  keyName: dnovosel_hvns_test
+  instanceTypes:
+    metal: t2.micro
+    proxy: t2.micro
+    eks: t2.large
+    jump: t3.medium
+    tools: t3.small
+  ami:
+    metal: ami-02eac2c0129f6376b
+    proxy: ami-02eac2c0129f6376b
+    jump: ami-02eac2c0129f6376b
+    tools: ami-0de53d8956e8dcf80
+  # EKS SPECIFIC VARIABLES
+  # These values must be changed in tandem...AMI version is matched to kuberntes version AND AWS region
+  # see the table here to find the right values... https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
+  eks:
+    version: 1.13                       # These two values are correct defaults for us-east-1
+    workerAMI: ami-0d3998d69ebe9b214    # Version only needs major.minor (i.e. 1.13, 1.14, etc)

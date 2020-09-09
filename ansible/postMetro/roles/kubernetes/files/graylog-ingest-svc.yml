@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: graylog-ingest
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+spec:
+  type: LoadBalancer
+  selector:
+    app: graylog-ingest
+  ports:
+#    - name: elasticsearch
+#      port: 9350
+#      targetPort: 9350
+    - name: syslog
+      port: 514
+      targetPort: 514
+    - name: plaintext
+      port: 5555
+      targetPort: 5555
+    - name: sidecar-collector
+      port: 5044
+      targetPort: 5044

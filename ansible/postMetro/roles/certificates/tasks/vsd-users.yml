@@ -1,0 +1,211 @@
+---
+# This task adds proxy users to VSD-A and assigns them to the
+# required groups.
+
+  # Get the ID for the csp root enterprise
+  - name: Get csp enterprise id
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: Enterprise
+      command: get_csp_enterprise
+    register: nuage_enterprise
+
+  # Try to create all the users (it mail fail if user already exists...this can be safely ignored)
+  - name: Create the proxy user if it doesn;t already exist (may fail if user already exists...safe to ignore)
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      state: present
+      properties:
+        email: "proxy@proxy.com"
+        first_name: "Proxy"
+        last_name: "Proxy"
+        password: "{{ new_pass }}"
+        user_name: "proxy"
+    ignore_errors: yes
+
+  - name: Create the proxy-post user (may fail if user already exists...safe to ignore)
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      state: present
+      properties:
+        email: "proxy-post@proxy.com"
+        first_name: "Proxy-post"
+        last_name: "Proxy-post"
+        password: "{{ new_pass }}"
+        user_name: "proxy-post"
+    ignore_errors: yes
+  
+  - name: Create the proxy-pre user (may fail if user already exists...safe to ignore)
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      state: present
+      properties:
+        email: "proxy-pre@proxy.com"
+        first_name: "Proxy-pre"
+        last_name: "Proxy-pre"
+        password: "{{ new_pass }}"
+        user_name: "proxy-pre"
+    ignore_errors: yes
+
+  - name: Create the portal user (may fail if user already exists...safe to ignore)
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      state: present
+      properties:
+        email: "vnsportal@proxy.com"
+        first_name: "vnsportal"
+        last_name: "vnsportal"
+        password: "vnsportal"
+        user_name: "vnsportal"
+    ignore_errors: yes
+
+  
+  # Get the user ids and store them in variables
+  - name: Find the proxy user if it exists
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      match_filter: "userName == 'proxy'"
+    ignore_errors: yes
+    register: proxy_user
+
+  - name: Find the proxy-post user if it exists
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      match_filter: "userName == 'proxy-post'"
+    ignore_errors: yes
+    register: proxy_post_user
+
+  - name: Find the proxy-pre user if it exists
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      match_filter: "userName == 'proxy-pre'"
+    ignore_errors: yes
+    register: proxy_pre_user
+
+  # Get the group IDs and store them in variables
+  - name: Find BootstrapCA group ID in csp Enterprise
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: Group
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      properties:
+        name: "BootstrapCA Group"
+    register: bootstrapca_group
+
+  - name: Find VSPCA group ID in csp Enterprise
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: Group
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      properties:
+        name: "VSPCA Group"
+    register: vspca_group
+
+  - name: Find Root group ID in csp Enterprise
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: Group
+      parent_id: "{{ nuage_enterprise.id }}"
+      parent_type: Enterprise
+      command: find
+      properties:
+        name: "Root Group"
+    register: root_group
+
+  # Assign the users to the groups
+  - name: Assign proxy-pre user to BootstrapCA group
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      id: "{{ proxy_pre_user.id }}"
+      parent_id: "{{ bootstrapca_group.id }}"
+      parent_type: Group
+      state: present
+    ignore_errors: yes
+
+
+  - name: Assign proxy-post user to VSPCA group
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      id: "{{ proxy_post_user.id }}"
+      parent_id: "{{ vspca_group.id }}"
+      parent_type: Group
+      state: present
+    ignore_errors: yes
+
+  - name: Assign proxy-post user to Root group
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      id: "{{ proxy_post_user.id }}"
+      parent_id: "{{ root_group.id }}"
+      parent_type: Group
+      state: present
+    ignore_errors: yes
+
+  - name: Assign portal user to Root group
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      id: "{{ vnsportal.id }}"
+      parent_id: "{{ root_group.id }}"
+      parent_type: Group
+      state: present
+    ignore_errors: yes
+
+
+  - name: Assign proxy user to Root group
+    connection: local
+    nuage_vspk:
+      auth: "{{ nuage_auth }}"
+      type: User
+      id: "{{ proxy_user.id }}"
+      parent_id: "{{ root_group.id }}"
+      parent_type: Group
+      state: present
+    ignore_errors: yes
+

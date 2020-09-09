@@ -1,0 +1,33 @@
+---
+# Configure zabbix agent customizations
+
+- name: Make sure the scripts and nvme directories exist first
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: centos
+    group: centos
+  with_items:
+    - /home/centos/scripts
+    - /home/centos/scripts/nvme
+
+- name: Copy license_check script to portal  
+  copy: 
+    owner: centos  
+    group: centos 
+    mode: '0755'    
+    src: "{{ item }}"
+    dest: /home/centos/scripts/nvme/{{ item }}
+  with_items:
+    - zabbix_nvme_smart_discovery.sh
+    - zabbix_nvme_smart_check.sh
+
+- name: Copy custom userparameters file for zabbix agent  
+  copy: 
+    owner: root  
+    group: root 
+    mode: '0644'    
+    src:  userparameter_nvme_smart.conf
+    dest: /etc/zabbix/zabbix_agentd.d/userparameter_nvme_smart.conf
+  notify: restart zabbix-agent
+

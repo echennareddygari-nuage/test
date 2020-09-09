@@ -1,0 +1,141 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 472
+      containers:
+      - name: grafana
+        image: grafana/grafana:6.3.5
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GF_SERVER_HTTP_PORT
+          value: "3000"
+        - name: GF_INSTALL_PLUGINS
+          value: "ryantxu-ajax-panel,btplc-alarm-box-panel,vonage-status-panel,flant-statusmap-panel,grafana-clock-panel,grafana-simple-json-datasource,alexanderzobnin-zabbix-app,briangann-gauge-panel,raintank-worldping-app"
+        - name: GF_DATABASE_TYPE
+          value: "mysql"
+        - name: GF_DATABASE_URL
+          value: "mysql://grafana:grafana@grafana-db:3306/grafana"
+        - name: GF_SSL_MODE
+          value: "false"
+        - name: GF_SESSION_PROVIDER
+          value: "mysql"
+        - name: GF_SESSION_PROVIDER_CONFIG
+          value: "grafana:grafana@tcp(grafana-db:3306)/grafana"
+        - name: GF_SMTP_FROM_ADDRESS
+          value: "hosted@nuagenetworks.net"
+        - name: GF_SMTP_FROM_NAME
+          value: "Grafana"
+        - name: GF_SMTP_HOST
+          value: "email-smtp.us-east-1.amazonaws.com:587"
+        - name: GF_SMTP_PASSWORD
+          value: "BPVQjbocRo2oEJ8j0pAOkvbe3fNT92ky0Pwncu41AXcL"
+        - name: GF_SMTP_USER
+          value: "AKIAJ6IXTTNFZRSAT4PA"
+        - name: GF_SMTP_ENABLED
+          value: "true"
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+      volumes:
+      - name: grafana-storage
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-db
+  labels:
+    name: grafana-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: grafana-db
+  template:
+    metadata:
+      labels:
+        name: grafana-db
+    spec:
+      containers:
+        - name: grafana-db
+          image: mysql:5.6
+          args:
+          - --character-set-server=utf8
+          - --collation-server=utf8_bin
+          ports:
+          - containerPort: 3306
+            name: mysql
+          env:
+          - name: MYSQL_USER
+            value: grafana
+          - name: MYSQL_PASSWORD
+            value: grafana
+          - name: MYSQL_DATABASE
+            value: grafana
+          - name: MYSQL_ROOT_PASSWORD
+            value: Alcateldc
+          volumeMounts:
+          - name: grafana-db-storage
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: grafana-db-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-db
+  labels:
+    app: grafana-db
+    tier: db
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+    name: grafana-db
+  selector:
+    name: grafana-db
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: grafana-gp2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+- debug
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+spec:
+  storageClassName: grafana-gp2
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

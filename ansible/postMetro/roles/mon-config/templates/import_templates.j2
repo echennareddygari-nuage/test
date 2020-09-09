@@ -1,0 +1,47 @@
+{
+    "jsonrpc": "2.0",
+    "method": "configuration.import",
+    "params": {
+        "format": "json",
+        "rules": {
+            "applications": {
+                "createMissing": true,
+                "deleteMissing": false
+            },
+            "valueMaps": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "hosts": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "groups": {
+                "createMissing": true
+            },
+            "items": {
+                "createMissing": true,
+                "updateExisting": true,
+                "deleteMissing": false
+            },
+            "templates": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "httptests": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "triggers": {
+                "createMissing": true,
+                "updateExisting": true
+            },
+            "templateLinkage": {
+                "createMissing": true
+            }
+        },
+        "source": "{{ lookup('file', item) | replace(zabbix.dummy_domain, host_domain) | replace('\\', '\\\\') | replace('\"', '\\\"') }}"    
+    },
+    "auth": "{{ token }}",
+    "id": 1
+}

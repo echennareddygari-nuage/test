@@ -1,0 +1,18 @@
+---
+# This task opens up access through IPtables for any request coming from
+# the monitoring tools subnet
+
+  - name: Open ports for any request coming from monitoring tools subnet
+    iptables:
+      chain: INPUT
+      protocol: tcp
+      match: tcp
+      source: "{{ subnet.ops }}"
+      jump: ACCEPT
+      action: insert
+      comment: Accept incoming connections from monitoring tools subnet
+    when: "'vsd' in inventory_hostname"
+
+  - name: Make iptables changes permanent
+    shell: iptables-save > /etc/sysconfig/iptables
+    become: yes

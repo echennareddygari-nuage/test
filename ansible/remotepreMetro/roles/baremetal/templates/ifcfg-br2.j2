@@ -1,0 +1,16 @@
+BOOTPROTO=static
+DEVICE=br2
+ONBOOT=yes
+TYPE=Bridge
+{% if "metal01" in inventory_hostname %}
+IPADDR="{{ metal01.ip.br2 }}"
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+IPADDR="{{ metal02.ip.br2 }}"
+{% endif %}
+{% if "metal03" in inventory_hostname %}
+IPADDR="{{ metal03.ip.br2 }}"
+{% endif %}
+NETMASK="255.255.255.240"
+NM_CONTROLLED="no"
+ZONE=trusted

@@ -1,0 +1,2015 @@
+###############################################################################
+# Virtualized Services Controller
+#
+# Specify configuration for Nuage VSCs.
+#
+
+#
+# VSC 1
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc01.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.1.101"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24 
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.1.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.121.1.101"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "18.235.159.23"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc01.Internet 
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc01 
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex) 
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.1.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    # data_bridge: (global Bridge interface)
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 18, 19, 20, 21 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 2
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc02.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.2.102"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24 
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.2.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.121.2.102"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "35.169.135.186"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc02.Internet 
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc02 
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex) 
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.2.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    # data_bridge: (global Bridge interface)
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 18, 19, 20, 21 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 3
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc03.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.1.103"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24 
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.1.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.121.1.103"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "54.211.125.25"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc03.Internet 
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc03 
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex) 
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.1.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    # data_bridge: (global Bridge interface)
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 22, 23, 24, 25 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 4
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc04.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.2.104"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24 
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.2.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.121.2.104"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "18.208.43.211"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc04.Internet 
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc04 
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex) 
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.2.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    # data_bridge: (global Bridge interface)
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 22, 23, 24, 25 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+
+#
+# VSC 5
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc05.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.1.105"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.1.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.122.1.5"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "100.73.1.5"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc05.mpls1
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc05
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex)
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.1.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    data_bridge: br2
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 26, 27, 28, 29 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 6
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc06.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.3.106"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.3.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.122.3.6"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "100.73.3.6"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc06.mpls1
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc06
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex)
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.3.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    data_bridge: br2
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 18, 19, 20, 21 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 7
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc07.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.2.107"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.2.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.122.2.27"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "100.73.2.27"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc07.mpls2
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc07
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex)
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.2.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    data_bridge: br3
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 26, 27, 28, 29 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+
+#
+# VSC 8
+#
+-
+    ##### Management Network
+
+    # < Hostname >
+    # Hostname of the VSC instance
+    #
+    hostname: "vsc08.prod-hvns-na01.internal"
+
+    # < Management IP address >
+    # The BOF/Management IP address of the controller
+    #
+    mgmt_ip: "100.120.3.108"
+
+    # < Management Network Prefix Length >
+    # Management network prefix length
+    #
+    mgmt_ip_prefix: 24
+
+    # < Management Network Gateway >
+    # Gateway IP on the Management network
+    #
+    mgmt_gateway: "100.120.3.1"
+
+    ########################
+
+    ##### Control Network
+
+    # < Control IP address >
+    # The Control/Data IP address of the controller
+    #
+    ctrl_ip: "100.122.3.28"
+
+    # < Control Netmask Prefix Length >
+    # Control network prefix length
+    #
+    ctrl_ip_prefix: 24
+
+    #####################
+
+    # < System IP address >
+    # Required for BGP pairing with peers
+    #
+    system_ip: "100.73.3.28"
+
+    # < VM name >
+    # Name of the virtual machine on the Hypervisor/vCenter Server.
+    #
+    vmname: vsc08.mpls2
+
+    # < XMPP username >
+    # Username used to identify the XMPP connection with VSD
+    #
+    xmpp_username: vsc08
+
+    # < Management Network Static Routes >
+    # Static Route list to be configured on the management/BOF interface
+    #
+    mgmt_static_route_list: [ 0.0.0.0/1, 128.0.0.0/1 ]
+
+    ##### Target Server
+
+    # < Target Server type >
+    # Type of hypervisor environment into which the instance will be created
+    # (kvm, vcenter, openstack, nuagex)
+    #
+    target_server_type: "kvm"
+
+    # < Target Server IP or FQDN >
+    # Hostname or IP address of the hypervisor where VM  will be instantiated. In the case of deployment in a vCenter environment, this will be the FQDN of the vCenter Server
+    #
+    target_server: "100.70.3.10"
+
+    ###################
+
+    # < System Name >
+    # Name of the system if other than hostname
+    #
+    # system_name: (Hostname)
+
+    # < Management Network Bridge >
+    # Network Bridge used for the management interface of a component or the BOF interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM. This field can be overridden by defining the management network bridge separately in the component configuration. Defaults to the global setting
+    #
+    # mgmt_bridge: (global Bridge interface)
+
+    # < Data Network Bridge >
+    # Network Bridge used for the data path of a component or the Control interface on VSC. This will be a Distributed Virtual PortGroup (DVPG) when deploying on vCenter or a Linux network bridge when deploying on KVM.
+    #
+    data_bridge: br3
+
+    # < VSD FQDN >
+    # FQDN of the VSD or VSD cluster for this VSC
+    #
+    vsd_fqdn: "xmpp.prod-hvns-na01.internal"
+
+    # < Private Management IP >
+    # Private Management IP Address of VSC instances
+    #
+    # internal_mgmt_ip: ""
+
+    # < Private Control IP Address >
+    # Private Control IP Address of VSC Instances
+    #
+    # internal_ctrl_ip: ""
+
+    # < Private Data Gateway IP Address >
+    # Private Data Gateway IP Address of VSC Instances
+    #
+    # internal_data_gateway_ip: ""
+
+    ##### vCenter Parameters
+
+    # < vCenter Datacenter Name >
+    # Name of the vCenter Datacenter on which the VSC VM will be deployed. Defaults to the common vCenter Datacenter Name if not defined here.
+    #
+    # vcenter_datacenter: (global vCenter Datacenter Name)
+
+    # < vCenter Cluster Name >
+    # Name of the vCenter Cluster on which the VSC VM will be deployed. Defaults to the common vCenter Cluster Name if not defined here.
+    #
+    # vcenter_cluster: (global vCenter Cluster Name)
+
+    # < vCenter Host Reference >
+    # Requires ovftool 4.3. Reference to the host on the vCenter cluster on which to deploy Nuage components
+    #
+    # vcenter_host_reference: (global vCenter Host Reference)
+
+    # < vCenter Datastore Name >
+    # Name of the vCenter Datastore on which the VSC VM will be deployed. Defaults to the common vCenter Datastore Name if not defined here.
+    #
+    # vcenter_datastore: (global vCenter Datastore Name)
+
+    ########################
+
+    ##### Health Parameters
+
+    # < Expected number of BGP neighbors >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_bgp_peers: 0
+
+    # < Expected number of vswitches >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vswitches: 0
+
+    # < Expected number of host vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_host_vports: 0
+
+    # < Expected number of VM vports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_vm_vports: 0
+
+    # < Expected number of gateway ports >
+    # Used in postdeploy and health workflows as expected values if non-zero
+    #
+    # expected_num_gateway_ports: 0
+
+    #######################
+
+    ##### OpenStack Parameters
+
+    # < OpenStack Image >
+    # Name of image installed on OpenStack for VSC
+    #
+    # openstack_image: ""
+
+    # < OpenStack Flavor >
+    # Name of instance flavor installed on OpenStack for VSC
+    #
+    # openstack_flavor: ""
+
+    # < OpenStack Mgmt Network >
+    # Name of management network on OpenStack for VSC
+    #
+    # openstack_mgmt_network: ""
+
+    # < OpenStack Mgmt Subnet >
+    # Name of management subnet on OpenStack for VSC
+    #
+    # openstack_mgmt_subnet: ""
+
+    # < OpenStack Mgmt Port Name >
+    # Name for Mgmt interface
+    #
+    # openstack_mgmt_port_name: ""
+
+    # < OpenStack Mgmt Port Security Groups >
+    # Set of security groups to associate with Mgmt interface
+    #
+    # openstack_mgmt_port_security_groups: []
+
+    ##########################
+
+    # < OpenStack Control Network >
+    # Name of control network on OpenStack for VSC
+    #
+    # openstack_control_network: ""
+
+    # < OpenStack Control Subnet >
+    # Name of control subnet on OpenStack for VSC
+    #
+    # openstack_control_subnet: ""
+
+    # < OpenStack Control Port Name >
+    # Name for Control interface
+    #
+    # openstack_control_port_name: ""
+
+    # < OpenStack Control Port Security Groups >
+    # Set of security groups to associate with Control interface
+    #
+    # openstack_control_port_security_groups: []
+
+    ##########################
+
+    # < KVM cpuset information >
+    # Cpuset information for cpu pinning on KVM. For example, VSC requires 4 cores and sample values will be of the form [ 0, 1, 2, 3 ]
+    #
+    cpuset: [ 22, 23, 24, 25 ]
+
+    # < Ejabberd user id >
+    # Ejabberd user id used to create the certificate
+    #
+    # ejabberd_id: ""
+
+    # < Private key path >
+    # Path to VSC certificate key pem file
+    #
+    # private_key_path: ""
+
+    # < Certificate path >
+    # Path to VSC certificate pem file
+    #
+    # certificate_path: ""
+
+    # < CA certificate path >
+    # Path to CA certificate pem file
+    #
+    # ca_certificate_path: ""
+
+    # < XMPP domain >
+    # XMPP domain used in custom certificates
+    #
+    # xmpp_domain: ""
+

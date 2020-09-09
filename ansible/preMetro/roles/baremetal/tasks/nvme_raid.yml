@@ -1,0 +1,75 @@
+---
+# Set up the nvme drives into required raid configurations
+
+- name: Create some required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - /home/metro
+    - /mnt/esstorage
+
+- name: Check if md0 device already exists and store result to variable
+  shell: blkid | grep md0 | wc -l
+  register: md0_exists
+
+#- debug:
+#    msg: "{{ md0_exists }}"
+
+#- debug:
+#    var: md0_exists
+#    verbosity: 2
+
+- name: Check if md1 device already exists and store result to variable
+  shell: blkid | grep md1 | wc -l
+  register: md1_exists
+
+- name: Create the md0 device if it doesn't already exist (does not guarantee it was correctly created)
+  shell: mdadm --create --run --verbose /dev/md0 --level=1 --raid-devices=2 /dev/nvme1n1 /dev/nvme2n1
+  when: md0_exists.stdout == "0"
+
+- name: Create an xfs filesystem on /dev/md0
+  filesystem:
+    fstype: xfs
+    dev: /dev/md0
+
+- name: Create the md1 device if it doesn't already exist (does not guarantee it was correctly created)
+  shell: mdadm --create --run --verbose /dev/md1 --level=5 --raid-devices=6 /dev/nvme3n1 /dev/nvme4n1 /dev/nvme5n1 /dev/nvme6n1 /dev/nvme7n1 /dev/nvme8n1
+  when: md1_exists.stdout == "0"
+
+- name: Create an xfs filesystem on /dev/md1
+  filesystem:
+    fstype: xfs
+    dev: /dev/md1
+
+- name: Get the md0 UUID
+  shell:  blkid | grep md0 | cut -d'"' -f 2
+  register: md0_uuid
+
+- name: Get the md1 UUID
+  shell:  blkid | grep md1 | cut -d'"' -f 2
+  register: md1_uuid
+
+- name: Write the md0 mount points to fstab and actively mount it
+  mount:
+    path: /home/metro
+    src: UUID={{ md0_uuid.stdout }}
+    fstype: xfs
+    opts: defaults,nofail
+    dump: '0'
+    passno: '2'
+    state: mounted
+
+- name: Write the md1 mount points to fstab and actively mount it
+  mount:
+    path: /mnt/esstorage
+    src: UUID={{ md1_uuid.stdout }}
+    fstype: xfs
+    opts: defaults,nofail
+    dump: '0'
+    passno: '2'
+    state: mounted
+
+- name: Write raid config to file
+  shell: mdadm --detail --scan --verbose > /etc/mdadm.conf

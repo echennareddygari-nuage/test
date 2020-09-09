@@ -1,0 +1,24 @@
+---
+#
+#
+
+  - name:  Fix root user authorized_keys file by copying correct file from centos user
+    copy:
+      src: /home/centos/.ssh/authorized_keys
+      dest: /root/.ssh/authorized_keys
+      owner: root
+      group: root
+      mode: '0600'
+    
+  - name: Remove pound key from "#PermitRootLogin yes"
+    replace:
+      path: /etc/ssh/sshd_config
+      regexp: '(^#PermitRootLogin yes\s)(.*)$'
+      replace: 'PermitRootLogin yes'
+    notify: restart sshd
+    
+#  - name: Restart sshd
+#    systemd:
+#      state: restarted 
+#      name:  sshd
+    

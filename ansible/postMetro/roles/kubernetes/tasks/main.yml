@@ -1,0 +1,6 @@
+---
+
+- import_tasks: init_kubectl.yml
+- import_tasks: deploy_apps.yml
+- import_tasks: route53.yml
+

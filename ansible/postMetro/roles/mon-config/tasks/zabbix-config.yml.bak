@@ -1,0 +1,356 @@
+---
+# This task configures a new Zabbix system to a fully ready state for monitoring the entire WL instance
+# Objects are configured using exsiting zabbix modules where possible
+# For objects where no zabbix module exists, we use the uri module to run zabbix api requests
+# The order of object creation has dependencies...do not chnage the order unless you know what you are doing!
+
+# - debug:
+#    var: opsguest_group
+
+#- pause:
+#    prompt: Paused for execution check...
+
+# Api based user auth token generation 
+- name: Generate an auth token for all subsequent API requests
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: '{"jsonrpc": "2.0", "method": "user.login", "params": {"user": "{{ zabbix.apiUser }}", "password": "{{ zabbix.apiPass }}"}, "id": 1, "auth": null}'
+    body_format: json
+  register: user_auth
+
+# Set the token to a variable for re-use
+- name: Extract the auth token and set as  variable
+  set_fact:
+    token: "{{ user_auth.json.result }}"
+
+# Create all host groups
+- name: Creating host groups for all server types
+  zabbix_group:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    state: present
+    host_groups: "{{ item }} servers - WL"
+  with_items: "{{ groups }}"
+  when: 
+    "'all' not in item and 'ungrouped' not in item"
+
+- name: Creating host groups for opsguest account
+  zabbix_group:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    state: present
+    host_groups: "opsguest - WL"
+  
+- name: Get the id of the opsguest host group  
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'hostgroup_get_opsguest.j2', convert_data=False) }}"
+    body_format: json
+  register: opsguest_hostgroup
+
+# Create all templates for all server types
+- name: Creating templates for all server types
+  zabbix_template:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    state: present
+    template_name: Template {{ item }} server - WL
+    template_groups: "{{ item }} servers - WL"
+  with_items: "{{ groups }}"
+  when: 
+    "'all' not in item and 'ungrouped' not in item"
+
+# Create all hosts in vsd group
+- name: Create all hosts in the vsd group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - vsd servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template vsd server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['vsd'] }}"
+
+  # Create all hosts in tools group
+- name: Create all hosts in the tools group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - tools servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template tools server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['tools'] }}"
+
+# Create all hosts in elasticsearch group
+- name: Create all hosts in the elasticsearch group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - elasticsearch servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template elasticsearch server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['elasticsearch'] }}"
+
+# Create all hosts in baremetal group
+- name: Create all hosts in the baremetal group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - baremetal servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template baremetal server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['baremetal'] }}"
+
+# Create all hosts in portal group
+- name: Create all hosts in the portal group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - portal servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template portal server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['portal'] }}"
+
+# Create all hosts in proxy group
+- name: Create all hosts in the proxy group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - proxy servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template proxy server - WL"
+      - "Template OS Linux"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 1
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 10050
+  with_items: "{{ groups['proxy'] }}"
+
+# Create all hosts in vsc group
+- name: Create all hosts in the vsc group
+  zabbix_host:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    host_name: "{{ item }}.{{ host_domain }}"
+    visible_name: "{{ item }}.{{ host_domain }}"
+    description: ""
+    host_groups:
+      - vsc servers - WL
+      - opsguest - WL
+    link_templates:
+      - "Template vsc server - WL"
+      - "Template Net Alcatel Timetra TiMOS SNMPv2"
+    status: enabled
+    state: present
+    interfaces:
+      - type: 2
+        main: 1
+        useip: 0
+        ip: ""
+        dns: "{{ item }}.{{ host_domain }}"
+        port: 161
+  with_items: "{{ groups['vsc'] }}"
+
+# Api based user/usergroup create 
+- name: Create a opsguest user group (opsguest) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'usergroup_create_opsguest.j2', convert_data=False) }}"
+    body_format: json
+  
+- name: Get the opsguest user group id via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'usergroup_get_opsguest.j2', convert_data=False) }}"
+    body_format: json
+  register: opsguest_group
+
+- name: Create a opsguest user (opsguest) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_opsguest.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a zabbix email alerts user (alerts) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_alerts.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a grafana data user (grafana) via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'user_create_grafana.j2', convert_data=False) }}"
+    body_format: json
+
+# Api based macro create 
+- name: Create a global macro for monitoring mobile number via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_monmobile.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a global macro for ops mobile number via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_opsmobile.j2', convert_data=False) }}"
+    body_format: json
+
+- name: Create a global macro for VSC SNMP ommunite string via API request
+  uri:
+    url: "{{ zabbix.apiUrl }}/api_jsonrpc.php"
+    method: POST
+    body: "{{ lookup('template', 'macro_create_snmp.j2', convert_data=False) }}"
+    body_format: json
+
+# Create trigger actions
+- name: Creating the email notification action
+  zabbix_action:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    name: "Send email alert when severity >= MAJOR"
+    event_source: 'trigger'
+    state: present
+    status: enabled
+    conditions:
+      - type: 'trigger_severity'
+        operator: '>='
+        value: 'high'
+    operations:
+      - type: send_message
+        subject: "ALERT -- Severity: {EVENT.SEVERITY} -- Host: {HOST.NAME} -- Problem: {EVENT.NAME}"
+        message: "{{ lookup('file', 'alert_message.txt') }}"
+        media_type: 'Email'
+        send_to_users:
+          - 'alerts'
+
+- name: Creating the voicecall notification action
+  zabbix_action:
+    server_url: "{{ zabbix.apiUrl }}"
+    login_user: "{{ zabbix.apiUser }}"
+    login_password: "{{ zabbix.apiPass }}"
+    name: "Send voicecall alert when severity >= MAJOR"
+    event_source: 'trigger'
+    state: present
+    status: enabled
+    conditions:
+      - type: 'trigger_severity'
+        operator: '>='
+        value: 'high'
+    operations:
+      - type: remote_command
+        execute_on: agent
+        run_on_hosts: tools01.{{ host_domain }}
+        command_type: custom_script
+        command: 'sudo -u ec2-user /home/ec2-user/scripts/pinpoint/send-voice-call.sh {$PT.OPSMOBILE} "{EVENT.SEVERITY} alert: {EVENT.NAME}"'
+      - type: remote_command
+        execute_on: agent
+        run_on_hosts: tools01.{{ host_domain }}
+        command_type: custom_script
+        command: 'sudo -u ec2-user /home/ec2-user/scripts/pinpoint/send-voice-call.sh {$PT.MONMOBILE} "{EVENT.SEVERITY} alert: {EVENT.NAME}"'
+
+

@@ -1,0 +1,94 @@
+---
+# Set the route 53 records for the dynamically created k8s services
+
+# Extract the FQDN of the pos service and store it for use in next task setting route53 records
+- name: Extract dynamically assigned service FQDNs for zabbix web
+  set_fact:
+    zabbix_web: "{{ lookup('k8s', kind='Service', field_selector='metadata.name=zabbix-web') }}"
+
+- name: Extract dynamically assigned service FQDNs for zabbix data
+  set_fact:    
+    zabbix_data: "{{ lookup('k8s', kind='Service', field_selector='metadata.name=zabbix-server') }}"
+
+- name: Extract dynamically assigned service FQDNs for grafana
+  set_fact:
+    grafana: "{{ lookup('k8s', kind='Service', field_selector='metadata.name=grafana-svc') }}"
+
+- name: Extract dynamically assigned service FQDNs for graylog web
+  set_fact:
+    graylog_web: "{{ lookup('k8s', kind='Service', field_selector='metadata.name=graylog-web') }}"
+
+- name: Extract dynamically assigned service FQDNs for graylog data
+  set_fact:    
+    graylog_ingest: "{{ lookup('k8s', kind='Service', field_selector='metadata.name=graylog-ingest') }}"
+
+# Add the route53 records 
+- name: Update the route53 record for zabbix web
+  route53:
+      aws_secret_key: "{{ aws.secret_key }}"
+      security_token: "{{ aws.security_token }}"
+      state: present
+      zone: "{{ host_domain }}"
+      private_zone: yes
+      record: zabbix.{{ host_domain }}
+      type: CNAME
+      ttl: 300
+      value: "{{ zabbix_web.status.loadBalancer.ingress[0].hostname }}"
+      overwrite: yes
+      hosted_zone_id: "{{ aws.hostedZoneId }}"
+
+- name: Update the route53 record for zabbix data
+  route53:
+      aws_secret_key: "{{ aws.secret_key }}"
+      security_token: "{{ aws.security_token }}"
+      state: present
+      zone: "{{ host_domain }}"
+      private_zone: yes
+      record: zabbix-data.{{ host_domain }}
+      type: CNAME
+      ttl: 300
+      value: "{{ zabbix_data.status.loadBalancer.ingress[0].hostname }}"
+      overwrite: yes
+      hosted_zone_id: "{{ aws.hostedZoneId }}"
+
+- name: Update the route53 record for grafana
+  route53:
+      aws_secret_key: "{{ aws.secret_key }}"
+      security_token: "{{ aws.security_token }}"
+      state: present
+      zone: "{{ host_domain }}"
+      private_zone: yes
+      record: grafana.{{ host_domain }}
+      type: CNAME
+      ttl: 300
+      value: "{{ grafana.status.loadBalancer.ingress[0].hostname }}"
+      overwrite: yes
+      hosted_zone_id: "{{ aws.hostedZoneId }}"
+
+- name: Update the route53 record for graylog
+  route53:
+      aws_secret_key: "{{ aws.secret_key }}"
+      security_token: "{{ aws.security_token }}"
+      state: present
+      zone: "{{ host_domain }}"
+      private_zone: yes
+      record: graylog.{{ host_domain }}
+      type: CNAME
+      ttl: 300
+      value: "{{ graylog_web.status.loadBalancer.ingress[0].hostname }}"
+      overwrite: yes
+      hosted_zone_id: "{{ aws.hostedZoneId }}"
+
+- name: Update the route53 record for graylog-ingest
+  route53:
+      aws_secret_key: "{{ aws.secret_key }}"
+      security_token: "{{ aws.security_token }}"
+      state: present
+      zone: "{{ host_domain }}"
+      private_zone: yes
+      record: graylog-data.{{ host_domain }}
+      type: CNAME
+      ttl: 300
+      value: "{{ graylog_ingest.status.loadBalancer.ingress[0].hostname }}"
+      overwrite: yes
+      hosted_zone_id: "{{ aws.hostedZoneId }}"

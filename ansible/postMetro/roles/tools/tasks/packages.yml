@@ -1,0 +1,36 @@
+---  
+# The following tasks updte and install all packages needed for this vm
+
+- name: Install all required packages
+  yum: 
+    name: "{{ item }}"
+    state: present
+  become: true
+  with_items:
+    - jq
+    - docker
+    - python-pip
+    - python3
+
+- name: Install pip packages
+  shell: pip install {{ item }}
+  become: true
+  with_items:
+    - PrettyTable
+    - vspk
+    - pexpect
+
+- name: Install pip3 packages
+  shell: pip3 install {{ item }}
+  become: true
+  with_items:
+    - requests 
+    - argparse
+    - datetime
+    - boto3
+
+- name: Update all packages to latest
+  yum:
+    name: "*"
+    state: latest
+  become: true  

@@ -1,0 +1,74 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mongodb-gp2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+mountOptions:
+- debug
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  storageClassName: mongodb-gp2
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+    role: master
+    tier: backend
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  # Replace with the IP of your minikube node / master node if you want external access
+  # externalIPs:
+  #   - xxx.zzz.yyy.qqq
+  selector:
+    app: mongodb
+    role: master
+    tier: backend
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        role: master
+        tier: backend
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:3
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: data
+              mountPath: /data/db
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mongodb-pvc

@@ -1,0 +1,13 @@
+---
+
+- name: restart zabbix-agent
+  systemd:
+    name: zabbix-agent
+    state: restarted
+  become: true
+
+- name: restart collector-sidecar
+  systemd:
+    name: collector-sidecar
+    state: restarted
+  become: true

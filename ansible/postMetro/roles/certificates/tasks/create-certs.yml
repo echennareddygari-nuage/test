@@ -1,0 +1,38 @@
+---
+# Generates the proxy certificates
+
+  - name: Generate proxy cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u proxy -c proxy -d proxy.{{ public_fqdn }} -f pem -t server -o csp
+    args:
+      creates: /opt/vsd/ejbca/p12/pem/proxy.pem
+
+  - name: Generate proxy-pre cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u proxy-pre -c proxy-pre -d {{ public_fqdn }} -f pem -t server -o csp
+    args:
+      creates: /opt/vsd/ejbca/p12/pem/proxy-pre.pem
+
+  - name: Generate proxy-post cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u proxy-post -c proxy-post -d {{ public_fqdn }} -f pem -t server -o csp
+    args:
+      creates: /opt/vsd/ejbca/p12/pem/proxy-post.pem
+
+  - name: Generate elastic cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u elastic -c elastic -d elastic -f pem -t server -o csp
+    args:
+      creates: /opt/vsd/ejbca/p12/pem/elastic.pem
+
+  - name: Generate upgrade cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u upgrade -c upgrade -d proxy.{{ public_fqdn }} -f pem -t server -o csp
+    args:
+      creates: /opt/vsd/ejbca/p12/pem/upgrade.pem
+
+  - name: Generate webfilter01 cert files on the VSD 
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u webfilter01 -c webfilter01 -o csp -d  webfilter01.{{ host_domain }} -p Alcateldc -f jks -t server
+    args:
+      creates: /opt/vsd/ejbca/p12/webfilter01.jks
+
+
+  - name: Generate webfilter02 cert files on the VSD
+    command: /opt/vsd/ejbca/deploy/certMgmt.sh -a generate -u webfilter02 -c webfilter02 -o csp -d  webfilter02.{{ host_domain }} -p Alcateldc -f jks -t server
+    args:
+      creates: /opt/vsd/ejbca/p12/webfilter02.jks

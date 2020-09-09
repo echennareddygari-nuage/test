@@ -1,0 +1,8 @@
+---  
+# The following include files contain all required steps to install
+# portal associated applications and configurations
+
+- import_tasks: packages.yml
+- import_tasks: selinux.yml
+- import_tasks: zabbix_custom.yml
+- import_tasks: sudoers.yml

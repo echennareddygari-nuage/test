@@ -1,0 +1,41 @@
+---
+# A set of miscellaneous tasks required to get the proxy server working properly
+
+#   
+- name:  Set selinux to permissive (temporary config to disable SElinux)
+  selinux:
+    state: permissive
+    policy: targeted
+
+- name: Creates AWS credential directory (root user)
+  file:
+    path: /root/.aws
+    state: directory
+  
+- name: Add the AWS config file to the correct root user location (necessary for instance based access to AWS cli commands)
+  template:
+      src: aws-config.j2
+      dest: /root/.aws/config
+      mode: '0600'
+      owner: root
+      group: root
+  become: yes
+    - /home/centos/.aws/config
+
+- name: Creates AWS credential directory (centos user)
+  file:
+    path: /home/centos/.aws/config
+    state: directory
+  
+- name: Add the AWS config file to the correct centos user location (necessary for instance based access to AWS cli commands)
+  template:
+      src: aws-config.j2
+      dest: /home/centos/.aws/config
+      mode: '0600'
+      owner: centos
+      group: centos
+  become: yes
+
+
+
+     

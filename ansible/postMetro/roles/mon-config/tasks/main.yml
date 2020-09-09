@@ -1,0 +1,5 @@
+---
+
+- import_tasks: zabbix-config-import.yml
+- import_tasks: zabbix-config.yml
+- import_tasks: grafana-config.yml

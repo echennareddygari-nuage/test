@@ -1,0 +1,27 @@
+---
+# Set up ssl certs for elastic servers
+
+  - name: Create a directory on the elastic search server
+    file:
+      path: /etc/nginx/ssl
+      state: directory
+      mode: '0755'
+
+  - name: Copy the elastic pem files to the elastic server
+    copy:
+      src: "{{ item }}"
+      dest: /etc/nginx/ssl
+    with_fileglob:
+      - "/home/software/certs/elastic*.pem"
+    notify: restart nginx
+  
+  # -exist option is necessary to avoid error messages from ansible on subsequent runs if the setting has already been applied
+  - name: Apply ipset configurations to elastic servers
+    shell: "{{ item }}"
+    with_items:
+      - ipset add vsd {{ portal01.ip }} -exist
+      - ipset add vsd {{ portal02.ip }} -exist
+      - ipset add vsd {{ portal03.ip }} -exist
+      - ipset add vsd {{ proxy01.ip.ens5 }} -exist
+      - ipset add vsd {{ proxy02.ip.ens5 }} -exist
+    ignore_errors: yes    

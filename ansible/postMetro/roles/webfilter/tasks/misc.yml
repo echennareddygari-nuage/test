@@ -1,0 +1,120 @@
+---
+# Start NTP service
+
+- name: Start and enable Service ntpd, if not started
+  systemd:
+    name: ntpd
+    state: started
+    enabled: yes
+
+# Copy VSD repo to webfilterVM
+
+
+- name: Remove existing repo configuration
+  file:
+    path: /etc/yum.repos.d/
+    state: absent
+  with_fileglob:
+       - /etc/yum.repos.d/*
+
+- name: Creates directory
+  file:
+    path: /etc/yum.repos.d
+    state: directory
+
+- name: Copy nuage-rhel-7.5.repo to yum.repo.d location
+  copy:
+    src: nuage-rhel-7.5.repo
+    dest: '/etc/yum.repos.d/nuage-rhel-7.5.repo'
+
+# Add hostname in the hosts file
+
+- name: Add hostname in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{webfilter01.ip}} webfilter01.{{host_domain}}'
+  when:
+    "'webfilter01' in inventory_hostname"
+
+- name: Add hostname in hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: '{{webfilter02.ip}} webfilter02.{{host_domain}}'
+  when:
+    "'webfilter02' in inventory_hostname"
+
+
+# Configure webfilter application
+- name: Configure application.properties file from template
+  template:
+    owner: root
+    group: root
+    mode: 644
+    src: application.properties.j2
+    dest: /opt/vsd/webfilter/conf/application.properties
+
+# restart webfilter monit service
+- name: restart webfilter process in monit
+  shell: monit restart webfilter
+
+# Update the inCompass database main seed
+- name: Update the inCompass database seed_34
+  shell: '/opt/vsd/webfilter/scripts/incompassOperations.sh -a all -p /opt/vsd/webfilter/seed_34'
+
+
+# Update the inCompass database
+- name: Update the full inCompass database
+  shell: '/opt/vsd/webfilter/scripts/incompassOperations.sh -a all'
+
+
+# remove default crontab jobs
+- name: remove default crontab jobs
+  file:
+    path: /var/spool/cron/root
+    state: absent
+
+
+# Add crontab job for daily DB sync webfilter02 --  3:10am/3:20am
+- name: Add crontab job for daily Seed DB sync webfilter02 -- 3:10am
+  lineinfile:
+    path: /etc/crontab 
+    line: '10 3 * * *   root /opt/vsd/webfilter/scripts/incompassOperations.sh -a all -p /opt/vsd/webfilter/seed_34'
+  when:
+    "'webfilter02' in inventory_hostname"
+
+- name: Add crontab job for daily Full DB sync webfilter02 -- 3:20am
+  lineinfile:
+    path: /etc/crontab
+    line: '20 3 * * *   root /opt/vsd/webfilter/scripts/incompassOperations.sh -a all'
+  when:
+    "'webfilter02' in inventory_hostname"
+
+
+- name: Add crontab job for daily Seed DB sync webfilter01 -- 4:10am
+  lineinfile:
+    path: /etc/crontab
+    line: '10 4 * * *   root /opt/vsd/webfilter/scripts/incompassOperations.sh -a all -p /opt/vsd/webfilter/seed_34'
+  when:
+    "'webfilter01' in inventory_hostname"
+
+- name: Add crontab job for daily Full DB sync webfilter01 -- 4:20am
+  lineinfile:
+    path: /etc/crontab
+    line: '20 4 * * *   root /opt/vsd/webfilter/scripts/incompassOperations.sh -a all'
+  when:
+    "'webfilter01' in inventory_hostname"
+
+
+# Open ports for any request coming from monitoring tools subnet
+- name: Open ports for any request coming from monitoring tools subnet 
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    match: tcp
+    source: "{{ subnet.ops }}"
+    jump: ACCEPT
+    action: insert
+    comment: Accept incoming connections from monitoring tools subnet
+
+- name: save iptables
+  shell: iptables-save > /etc/sysconfig/iptables

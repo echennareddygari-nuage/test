@@ -1,0 +1,75 @@
+---
+# This task confgiures all the dashboards for a fully functional ready to use
+# Grafana instance.
+
+# Configure datasources
+- name: Create zabbix datasource
+  grafana_datasource:
+    grafana_url: http://{{ grafana.url }}
+    grafana_user: "{{ grafana.export_user }}"
+    grafana_password:  "{{ grafana.export_pass }}"
+    name: "datasource-zabbix"
+    org_id: "1"
+    ds_type: "alexanderzobnin-zabbix-datasource"
+    ds_url: "http://zabbix.{{ host_domain }}:8980/api_jsonrpc.php"
+    user: grafana
+    password: grafana 
+    trends: yes
+    is_default: yes
+  
+- name: Create elasticsearch vlan datasource
+  grafana_datasource:
+    grafana_url: http://{{ grafana.url }}
+    grafana_user: "{{ grafana.export_user }}"
+    grafana_password:  "{{ grafana.export_pass }}"
+    name: "datasource-elastic-{{ item }}"
+    org_id: "1"
+    ds_type: "elasticsearch"
+    ds_url: "http://es.{{ host_domain }}:9200"
+    database: "[{{ item }}-]YYYY-MM-DD"
+    time_field: "timestamp"
+    time_interval: "1m"
+    interval: "Daily"
+    es_version: 5
+  with_items:
+    - "nuage_vlan"
+    - "nuage_vport"
+    - ".monitoring-es-6"
+    
+# Make temporary working copy of dummy template file
+- name: Make temporary working copy of dummy template file with name temp_*
+  copy:
+    src: "{{ item }}"
+    dest: "{{ item }}.temp"
+  with_fileglob: "g_dummy_*.json"
+
+# Swap out the domain for the system where the backup was taken and replace it with 
+# a dummy value that can be swapped out again later
+- name: Swap out domain in all config dummy files for the dummy domain value
+  replace:
+    path: "{{ item }}"
+    regexp: "{{ grafana.dummy_domain }}"
+    replace: "{{ host_domain }}"
+  with_fileglob: "g_dummy_*.temp"
+
+# Configure the Grafana dashboards from file
+- name: Importing all Grafana dashboards from file
+  grafana_dashboard:
+    grafana_url: http://{{ grafana.url }}
+    grafana_user: "{{ grafana.export_user }}"
+    grafana_password:  "{{ grafana.export_pass }}"
+    state: present
+    message: Imported by ansible
+    overwrite: yes
+    path: "{{ item }}"
+  with_fileglob: "g_dummy_*.temp"
+
+# Delete the temp files
+- name: Delete the temporary files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob: "g_dummy_*.temp"
+
+
+

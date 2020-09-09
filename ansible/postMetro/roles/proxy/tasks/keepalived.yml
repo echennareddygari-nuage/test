@@ -1,0 +1,28 @@
+---
+# Configure the keepalived service for haproxy
+
+- name: Copy keepalived config file to proxy  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf  
+  notify: restart keepalived
+    
+- name: Copy failover script to proxy  
+  template: 
+    owner: root 
+    group: root 
+    mode: 755    
+    src: failover.sh.j2
+    dest: /etc/keepalived/failover.sh
+  notify: restart keepalived
+
+- name: Enable and start keepalived service
+  systemd:
+    name: keepalived
+    state: started
+    enabled: yes
+  
+ 

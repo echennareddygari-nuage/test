@@ -1,0 +1,5 @@
+---
+# Create a temporary SG to allow yum pakcage install from proxy
+
+- name: Add the SG to the proxy
+  shell: aws ec2 modify-instance-attribute --instance-id i-12345678 --groups sg-old-123def sg-new-abc123

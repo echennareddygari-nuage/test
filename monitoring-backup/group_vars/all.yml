@@ -1,0 +1,26 @@
+# Zabbix - specific config data
+###############################################################################
+host_domain:    prod-hvns-na01.internal
+
+zabbix:
+  dataHostname: zabbix-data.{{ host_domain }}
+  webHostname:  zabbix.{{ host_domain }}
+  apiUrl:       http://zabbix.{{ host_domain }}:8980
+  webPort:      8980
+  apiUser:      Admin 
+  apiPass:      eR^UHgpY2Y2N6!@E
+  agentrepo:    https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-agent-4.0.5-1.el7.x86_64.rpm
+  senderrepo:   https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-sender-4.0.5-1.el7.x86_64.rpm
+  export_dir:   /home/software/zabbix_export
+  
+  # don't forget to update password with a one time random value
+  notificationUser: notifications
+  notificationPass: notifications 
+  grafanaUser: grafana
+  grafanaPass: grafana
+
+  # This only applies for the zabbix config backup role
+  # it is used to swap out existing domain (domain_swap) for a generic one (dummy_domain) 
+  # that can be substituted for current domain at execution time when creating a new deployment
+  domain_swap:  prod-hvns-na01.internal
+  dummy_domain: dummy.domain

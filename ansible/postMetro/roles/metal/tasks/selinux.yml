@@ -1,0 +1,8 @@
+---
+# Copy any generic script files required for the haproxy server
+
+- name: Set selinux to permissive mode
+  selinux:
+    policy:  targeted
+    state:   permissive
+

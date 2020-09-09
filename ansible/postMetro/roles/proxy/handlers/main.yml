@@ -1,0 +1,28 @@
+---
+# All the handlers for this role
+
+- name: restart haproxy
+  systemd:
+    name: rh-haproxy18-haproxy
+    state: restarted
+
+- name: restart httpd
+  systemd:
+    name: httpd
+    state: restarted
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+
+- name: restart keepalived
+  systemd:
+    name: keepalived
+    state: restarted
+
+- name: restart network
+  systemd:
+    name: network
+    state: restarted
+  

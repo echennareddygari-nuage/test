@@ -1,0 +1,24 @@
+{
+    "jsonrpc": "2.0",
+    "method": "user.create",
+    "params": {
+        "alias": "{{ zabbix.notificationUser }}",
+        "passwd": "{{ zabbix.notificationPass }}",
+        "usrgrps": [
+            {            
+                "usrgrpid": "12"
+            }
+        ],
+        "user_medias": [
+            {
+                "mediatypeid": "1", 
+                "sendto": "nuage_sdwan_wl_am@nokia.com", 
+                "active": 0, 
+                "severity": 63, 
+                "period": "1-7,00:00-24:00" 
+            } 
+        ]
+    },
+    "auth": "{{ token }}",
+    "id": 100
+}

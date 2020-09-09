@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# 1, Create AWS IAM user with a policy allowing only AWS SNS Publish command
+# 2, Install awscli with 'yum -y install awscli' on zabbix server
+# 3, Add /bin/bash shell for zabbix user: usermod -s /bin/bash zabbix
+# 4, Deploy this script to: /etc/zabbix/send-aws-sns-sms.sh
+# 5, Edit this script and define the required variables
+# 6, Run the script manually to test
+# 7, Use the script in Zabbix. Create a new Media Type -> Script
+#    Use zabbix documentation for the script parameter setup
+#    https://www.zabbix.com/documentation/3.0/manual/config/notifications/media/script
+# 8, Create new Media for zabbix users, use phone number in E.164 format like: +447802861010
+#
+# Make sure the message is not longer than 140 ASCII chars for best results:
+# https://docs.aws.amazon.com/sns/latest/dg/sms_publish-to-phone.html
+#
+
+if [ $# -eq 1 ]; then
+    /bin/aws sns publish --topic-arn "{{ aws.arn.sns }}" --message "${1}" &>> /home/ec2-user/scripts/sns/sns.log
+else
+    /bin/echo -e "\nThis script requires 1 parameter."
+    /bin/echo -e "\nUsage: ${0} +ccnnnnnnnn 'My message here'\n"
+fi

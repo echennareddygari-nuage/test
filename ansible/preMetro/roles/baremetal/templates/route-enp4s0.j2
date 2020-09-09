@@ -1,0 +1,24 @@
+{% if "metal01" in inventory_hostname %}
+{{ metal02.routes.mgmt }} via {{ metal01.gateway.enp4s0 }}
+{{ metal03.routes.mgmt }} via {{ metal01.gateway.enp4s0 }}
+{{ metal02.routes.br0 }} via {{ metal01.gateway.enp4s0 }}
+{{ metal03.routes.br0 }} via {{ metal01.gateway.enp4s0 }}
+{{ ntp.ip }} via {{ metal01.gateway.enp4s0 }}
+{{ jump.ip }} via {{ metal01.gateway.enp4s0 }}
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+{{ metal01.routes.mgmt }} via {{ metal02.gateway.enp4s0 }}
+{{ metal03.routes.mgmt }} via {{ metal02.gateway.enp4s0 }}
+{{ metal01.routes.br0 }} via {{ metal02.gateway.enp4s0 }}
+{{ metal03.routes.br0 }} via {{ metal02.gateway.enp4s0 }}
+{{ ntp.ip }} via {{ metal02.gateway.enp4s0 }}
+{{ jump.ip }} via {{ metal02.gateway.enp4s0 }}
+{% endif %}
+{% if "metal03" in inventory_hostname %}
+{{ metal01.routes.mgmt }} via {{ metal03.gateway.enp4s0 }} 
+{{ metal02.routes.mgmt }} via {{ metal03.gateway.enp4s0 }} 
+{{ metal01.routes.br0 }} via {{ metal03.gateway.enp4s0 }} 
+{{ metal02.routes.br0 }} via {{ metal03.gateway.enp4s0 }}
+{{ ntp.ip }} via {{ metal03.gateway.enp4s0 }} 
+{{ jump.ip }} via {{ metal03.gateway.enp4s0 }}
+{% endif %}

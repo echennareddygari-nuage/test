@@ -1,0 +1,289 @@
+- hosts: <hosts>
+  tasks:
+  - name:  Delete first 155 characters of /root/.ssh/authorized_keys
+    shell: sed -i -r 's/.{155}//' /root/.ssh/authorized_keys
+  
+  - name: Remove pound key from #PermitRootLogin yes
+    replace:
+          path: /etc/ssh/sshd_config
+          regexp: '(^#PermitRootLogin yes\s)(.*)$'
+          replace: 'PermitRootLogin yes'
+  
+  - name: Restart sshd
+    systemd:
+          state: restarted 
+          name:  sshd
+            
+  - name: install qemu-kvm libvirt bridge-utils libguestfs-tools libvirt-python firewalld ntp tcpdump bind-utils squid
+    yum: name=qemu-kvm,libvirt,bridge-utils,libguestfs-tools,libvirt-python,firewalld,ntp,tcpdump,bind-utils,squid state=latest update_cache=yes 
+ 
+  - name: Start libvirtd
+    systemd:
+          state: started
+          name: libvirtd
+    
+  - name: Activate libvirtd
+    systemd:
+          name: libvirtd
+          enabled: yes
+          masked: no
+   
+  - name: Activate ntpd
+    systemd:
+         name: ntpd
+         enabled: yes
+         masked: no
+  
+  - name: Start ntpd
+    systemd:
+         state: started
+         name: ntpd
+  
+  - name: Activate firewalld
+    systemd:
+         name: firewalld
+         enabled: yes
+         masked: no
+   
+  - name: Start firewalld
+    systemd:
+         state: started
+         name: firewalld
+  
+  - name: Activate squid
+    systemd:
+         name: squid
+         enabled: yes
+         masked: no
+    
+  - name: Start squid
+    systemd:
+         state: started
+         name: squid
+  
+  - name:  Delete /etc/sysconfig/network-scripts/ifcfg-eth0
+    shell: rm -f /etc/sysconfig/network-scripts/ifcfg-eth0
+ 
+  - name: Construct Network Script ifcfg-br0
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-br0"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=br0
+           ONBOOT=yes
+           IPADDR="192.168.1.1"
+           NETMASK="255.255.255.0"
+           NM_CONTROLLED="no"
+           TYPE="Bridge"
+           EOM 
+    
+  - name: Construct Network Script ifcfg-br1
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-br1"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=br1
+           ONBOOT=yes
+           IPADDR="192.168.101.1"
+           NETMASK="255.255.255.0"
+           NM_CONTROLLED="no"
+           TYPE="Bridge"
+           EOM
+   
+  - name: Construct Network Script enp4s0
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-enp4s0"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=enp4s0
+           ONBOOT=yes
+           IPADDR="10.0.1.10"
+           NETMASK="255.255.255.0"
+           GATEWAY="10.0.1.1"
+           NM_CONTROLLED="no"
+           TYPE="Ethernet"
+           EOM
+          
+  - name: Construct Network Script ifcfg-ens1
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-ens1"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=ens1
+           ONBOOT=yes
+           IPADDR="10.100.1.10"
+           NETMASK="255.255.255.0"
+           GATEWAY="10.100.1.1"
+           NM_CONTROLLED="no"
+           TYPE="Ethernet"
+           EOM
+     
+  - name: Construct Network Script ifcfg-ens1:1
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-ens1:1"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=ens1:1
+           ONBOOT=yes
+           IPADDR="10.100.1.101"
+           NETMASK="255.255.255.0"
+           GATEWAY="10.100.1.1"
+           NM_CONTROLLED="no"
+           TYPE="Ethernet"
+           EOM
+     
+  - name: Construct Network Script ifcfg-ens1:2
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/ifcfg-ens1:2"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           BOOTPROTO=static
+           DEVICE=ens1:2
+           ONBOOT=yes
+           IPADDR="10.100.1.103"
+           NETMASK="255.255.255.0"
+           GATEWAY="10.100.1.1"
+           NM_CONTROLLED="no"
+           TYPE="Ethernet"
+           EOM
+     
+  - name: Add GATEWAYDEV=enp4s0 to /etc/sysconfig/network
+    lineinfile:
+           path: /etc/sysconfig/network  
+           line:  'GATEWAYDEV=enp4s0'
+   
+  - name: Construct Network Script route-enp4s0
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/route-enp4s0"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           10.0.2.0/24 via 10.0.1.1
+           10.0.3.0/24 via 10.0.1.1
+           192.168.2.0/24 via 10.0.1.1
+           192.168.3.0/24 via 10.0.1.1
+           169.254.169.123 via 10.0.1.1
+           10.100.1.100 via 10.0.1.1
+           EOM
+     
+  - name: Display message
+    debug:
+           msg: Add second route-table
+    
+  - pause:
+           seconds: 2
+  
+  - name: Add line 2 control  to /etc/iproute2/rt_tables
+    lineinfile:
+           path: /etc/iproute2/rt_tables 
+           line:  '2 control'
+   
+  - name: Construct Network Script route-ens1
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/route-ens1"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           10.100.1.0 dev ens1 table control
+           default via 10.100.1.1 dev ens1 table control
+           EOM
+     
+  - name: Construct Network Script rule-ens1
+    vars:
+       FILE: "/etc/sysconfig/network-scripts/rule-ens1"
+    shell:
+       cmd: |
+           cat <<EOM > {{FILE}}
+           from 10.100.1.0/24 lookup control
+           from 192.168.101.0/24 lookup control
+           from 10.100.1.100 lookup main
+           EOM
+     
+  - name: service
+    service:
+           name:  network
+           state: restarted
+      
+  - name: Display message
+    debug:
+           msg: Add routes
+    
+  - pause:
+           seconds: 2
+    
+  - name: Add server  127.127.1.0  to /etc/ntp.conf
+    lineinfile:
+           path: /etc/ntp.conf
+           line:  'server  127.127.1.0'
+   
+  - name: service
+    service:
+           name:  ntpd
+           state: restarted
+   
+  - name:  Firewall cmd 1
+    shell: firewall-cmd --zone=public --remove-interface=br0
+ 
+  - name:  Firewall cmd 2
+    shell: firewall-cmd --zone=public --remove-interface=br1
+ 
+  - name:  Firewall cmd 3
+    shell: firewall-cmd --zone=public --remove-interface=enp4s0
+ 
+  - name:  Firewall cmd 4 
+    shell: firewall-cmd --zone=public --remove-interface=ens1
+ 
+  - name:  Firewall cmd 5
+    shell: firewall-cmd --zone=trusted --add-interface=br0 --permanent
+ 
+  - name:  Firewall cmd 6
+    shell: firewall-cmd --zone=trusted --add-interface=enp4s0 --permanent
+ 
+  - name:  Firewall cmd 7
+    shell: firewall-cmd --zone=trusted --add-interface=br1 --permanent
+ 
+  - name:  Firewall cmd 8
+    shell: firewall-cmd --zone=trusted --add-interface=ens1 --permanent
+ 
+  - name:  Firewall cmd 9
+    shell: firewall-cmd --reload
+ 
+  - name:  Firewall cmd 10
+    shell: firewall-cmd --zone=trusted --list-all
+ 
+  - name:  Firewall cmd 11
+    shell: firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d 10.100.1.101 -j DNAT --to 192.168.101.101
+ 
+  - name:  Firewall cmd 12 
+    shell: firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s 192.168.101.101 -j SNAT --to 10.100.1.101
+ 
+  - name:  Firewall cmd 13
+    shell: firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I PREROUTING -d 10.100.1.103 -j DNAT --to 192.168.101.103
+ 
+  - name:  Firewall cmd 14
+    shell: firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -s 192.168.101.103 -j SNAT --to 10.100.1.103
+ 
+  - name:  Firewall cmd 15  
+    shell: firewall-cmd --reload
+ 
+  - name: Add net.ipv4.ip_forward = 1  to /etc/sysctl.conf
+    lineinfile:
+         path: /etc/sysctl.conf
+         line:  'net.ipv4.ip_forward = 1'
+   
+  - name:  Get values from sysctl.conf
+    shell: sysctl -p /etc/sysctl.conf
+
+     
+

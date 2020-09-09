@@ -1,0 +1,19 @@
+BOOTPROTO=static
+DEVICE=ens2
+ONBOOT=yes
+TYPE="Ethernet"
+{% if "metal01" in inventory_hostname %}
+IPADDR="{{ metal01.ip.ens2 }}"
+GATEWAY="{{ metal01.gateway.ens2 }}"
+{% endif %}
+{% if "metal02" in inventory_hostname %}
+IPADDR="{{ metal02.ip.ens2 }}"
+GATEWAY="{{ metal02.gateway.ens2 }}"
+{% endif %}
+{% if "metal03" in inventory_hostname %}
+IPADDR="{{ metal03.ip.ens2 }}"
+GATEWAY="{{ metal03.gateway.ens2 }}"
+{% endif %}
+NETMASK="255.255.255.240"
+NM_CONTROLLED="no"
+ZONE=trusted

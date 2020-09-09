@@ -1,0 +1,8 @@
+  - name: Copy terraform config file to localhost  
+    local_action:
+      module: template
+      owner: ec2-user 
+      group: ec2-user
+      mode: 644    
+      src: terraform.tfvars.j2
+      dest: "{{ baseDir }}/terraform/hvns/terraform.tfvars"

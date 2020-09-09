@@ -1,0 +1,81 @@
+---
+# Configure all interface and routing for the proxy hosts
+
+- name: Configure ifcfg-ens6 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: ifcfg-ens6.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-ens6
+  notify: 
+    - restart network
+    - restart httpd
+
+- name: Configure ifcfg-ens5 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: ifcfg-ens5.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-ens5
+  notify: 
+    - restart network
+    - restart httpd
+  
+- name: Add second route table control
+  lineinfile:
+    path: /etc/iproute2/rt_tables
+    line: '2 control'
+
+- name: Configure route-ens6 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: route-ens6.j2
+    dest: /etc/sysconfig/network-scripts/route-ens6
+  notify: 
+    - restart network
+    - restart httpd
+
+- name: Configure route-ens5 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: route-ens5.j2
+    dest: /etc/sysconfig/network-scripts/route-ens5
+  notify:
+    - restart network
+    - restart httpd
+
+- name: Configure rule-ens5 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: rule-ens5.j2
+    dest: /etc/sysconfig/network-scripts/rule-ens5
+  notify: 
+    - restart network
+    - restart httpd
+
+- name: Configure route-ens5 file from template  
+  template: 
+    owner: root 
+    group: root 
+    mode: 644    
+    src: rule-ens6.j2
+    dest: /etc/sysconfig/network-scripts/rule-ens6
+  notify: 
+    - restart network
+    - restart httpd
+
+- name: Remove eth0 configuration (automatically created by AWS image)
+  file:
+    path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    state: absent
+  notify:
+    - restart network
+     

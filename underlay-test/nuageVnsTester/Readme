@@ -1,0 +1,4 @@
+1.Install nmap-7.70-setup.exe,in some cases, install npcap maybe failed when install the nmap, if such case, please install npcap-0.99-r7.exe directly.
+2.Install .Net framework 4.6.1, NDP461-KB3102436-x86-x64-AllOS-ENU.exe, will take some time…
+3.Install VNS underlay test tool, NuageVnsTesterSetup.msi
+4.After the installation, you can run application from the desktop or startip menu shortcuts.

@@ -1,0 +1,6 @@
+{% if "proxy01" in inventory_hostname %}
+from {{ proxy01.route_sub.ens5 }} table main
+{% endif %}
+{% if "proxy02" in inventory_hostname %}
+from {{ proxy02.route_sub.ens5 }} table main
+{% endif %}

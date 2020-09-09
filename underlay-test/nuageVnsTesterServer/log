@@ -1,0 +1,23 @@
+2018-11-02 23:02:10,138 udp_server.py:29 INFO UDP server starting up on 0.0.0.0 port 123
+2018-11-02 23:02:10,141 udp_server.py:29 INFO UDP server starting up on 0.0.0.0 port 4500
+2018-11-02 23:02:10,144 udp_server.py:29 INFO UDP server starting up on 0.0.0.0 port 4789
+2018-11-02 23:02:10,159 _internal.py:88 INFO  * Running on http://0.0.0.0:7407/ (Press CTRL+C to quit)
+2018-11-02 23:05:32,338 tls_server.py:42 INFO TCP server starting up on ('127.0.0.1', 54531) port 6633
+2018-11-02 23:06:05,310 tls_server.py:42 INFO TCP server starting up on ('127.0.0.1', 54541) port 6633
+2018-11-02 23:11:22,726 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54571) port 6633
+2018-11-02 23:14:48,074 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54638) port 6633
+2018-11-02 23:14:48,082 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:16:19,882 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54641) port 6633
+2018-11-02 23:16:48,828 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54644) port 6633
+2018-11-02 23:17:43,245 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54648) port 6633
+2018-11-02 23:17:43,251 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:18:14,371 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54652) port 6633
+2018-11-02 23:18:14,377 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:19:42,671 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54665) port 6633
+2018-11-02 23:19:42,678 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:21:42,576 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54677) port 6633
+2018-11-02 23:21:42,581 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:21:47,937 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54678) port 6633
+2018-11-02 23:21:47,943 tls_server.py:55 INFO TLS TCP server received data: boo!
+2018-11-02 23:22:16,439 tls_server.py:46 INFO TCP server starting up on ('127.0.0.1', 54679) port 6633
+2018-11-02 23:22:16,444 tls_server.py:55 INFO TLS TCP server received data: boo!

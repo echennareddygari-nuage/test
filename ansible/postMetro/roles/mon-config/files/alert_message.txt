@@ -1,0 +1,9 @@
+Problem started at {EVENT.TIME} on {EVENT.DATE}
+
+Problem name: {EVENT.NAME}
+
+Host: {HOST.NAME}
+
+Severity: {EVENT.SEVERITY}
+
+Original problem ID: {EVENT.ID} {TRIGGER.URL}
