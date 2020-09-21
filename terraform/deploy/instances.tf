@@ -363,7 +363,8 @@ resource "aws_instance" "webfilter01" {
   network_interface {
     network_interface_id = "${aws_network_interface.webfilter1.id}"
     device_index         = 0
-  }root_block_device = {
+  }
+  root_block_device = {
         volume_size = "${var.webfilterRootDiskSize}"
   }
 
@@ -381,7 +382,8 @@ resource "aws_instance" "webfilter02" {
   network_interface { 
     network_interface_id = "${aws_network_interface.webfilter2.id}"
     device_index         = 0
-  }root_block_device = {
+  }
+  root_block_device = {
         volume_size = "${var.webfilterRootDiskSize}"
   }
 
