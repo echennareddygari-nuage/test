@@ -2,10 +2,10 @@
 # using import method to reference object
 #
 resource "aws_iam_role" "eksClusterRole" {
- name = "${var.eksClusterName}-eksClusterRole"
- permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
+  name                 = "${var.eksClusterName}-eksClusterRole"
+  permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
 
- assume_role_policy = <<POLICY
+  assume_role_policy = <<POLICY
 {
  "Version": "2012-10-17",
  "Statement": [
@@ -19,6 +19,7 @@ resource "aws_iam_role" "eksClusterRole" {
  ]
 }
 POLICY
+
 }
 
 # resource "aws_iam_role" "eksClusterRole" {
@@ -43,22 +44,22 @@ POLICY
 
 resource "aws_iam_role_policy_attachment" "eksClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = "${aws_iam_role.eksClusterRole.name}"
+  role       = aws_iam_role.eksClusterRole.name
 }
 
 resource "aws_iam_role_policy_attachment" "eksServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = "${aws_iam_role.eksClusterRole.name}"
+  role       = aws_iam_role.eksClusterRole.name
 }
 
 # deprecated since object is pre-existing in AWS
 # using import method to reference object
 #
 resource "aws_iam_role" "eksWorkerRole" {
- name = "${var.eksClusterName}-eksWorkerRole"
- permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
+  name                 = "${var.eksClusterName}-eksWorkerRole"
+  permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
 
- assume_role_policy = <<POLICY
+  assume_role_policy = <<POLICY
 {
  "Version": "2012-10-17",
  "Statement": [
@@ -72,6 +73,7 @@ resource "aws_iam_role" "eksWorkerRole" {
  ]
 }
 POLICY
+
 }
 
 # resource "aws_iam_role" "eksWorkerRole" {
@@ -96,33 +98,31 @@ POLICY
 
 resource "aws_iam_role_policy_attachment" "eksWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "${aws_iam_role.eksWorkerRole.name}"
+  role       = aws_iam_role.eksWorkerRole.name
 }
 
 resource "aws_iam_role_policy_attachment" "eksWorkerCNIPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "${aws_iam_role.eksWorkerRole.name}"
+  role       = aws_iam_role.eksWorkerRole.name
 }
 
 resource "aws_iam_role_policy_attachment" "eksWorkerContainerRegistryPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "${aws_iam_role.eksWorkerRole.name}"
+  role       = aws_iam_role.eksWorkerRole.name
 }
 
-
 resource "aws_iam_instance_profile" "eksWorkerProfile" {
- name = "${var.eksClusterName}-eksOpsProfile"
- role = "${aws_iam_role.eksWorkerRole.name}"
+  name = "${var.eksClusterName}-eksOpsProfile"
+  role = aws_iam_role.eksWorkerRole.name
 }
 
 # resource "aws_iam_instance_profile" "eksWorkerProfile" {
 # #   instance config imported from existing object in AWS
 # }
 
-
 resource "aws_iam_role_policy" "installerS3AccessPolicy" {
   name = "${var.projectName}-installerS3AccessPolicy"
-  role = "${aws_iam_role.installerS3AccessRole.id}"
+  role = aws_iam_role.installerS3AccessRole.id
 
   policy = <<POLICY
 {
@@ -194,13 +194,14 @@ resource "aws_iam_role_policy" "installerS3AccessPolicy" {
     ]
 }
 POLICY
+
 }
 
 resource "aws_iam_role" "installerS3AccessRole" {
- name = "${var.projectName}-installerS3AccessRole"
- permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
+  name                 = "${var.projectName}-installerS3AccessRole"
+  permissions_boundary = "arn:aws:iam::${var.aws-account}:policy/NokiaBoundary"
 
- assume_role_policy = <<POLICY
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -215,9 +216,11 @@ resource "aws_iam_role" "installerS3AccessRole" {
   ]
 }
 POLICY
+
 }
 
 resource "aws_iam_instance_profile" "installerS3AccessInstanceProfile" {
   name = "${var.projectName}-installerS3AccessInstanceProfile"
-  role = "${aws_iam_role.installerS3AccessRole.name}"
+  role = aws_iam_role.installerS3AccessRole.name
 }
+
