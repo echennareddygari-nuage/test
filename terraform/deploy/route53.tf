@@ -90,14 +90,6 @@ resource "aws_route53_record" "vsd" {
   records = [var.vsd1IP, var.vsd2IP, var.vsd3IP]
 }
 
-resource "aws_route53_record" "xmpp" {
-  zone_id = aws_route53_zone.internalFQDN.zone_id
-  name    = "xmpp.${var.internalFQDN}"
-  type    = "A"
-  ttl     = var.internalDNSTTL
-  records = [aws_route53_record.vsd01.records[0], aws_route53_record.vsd02.records[0], aws_route53_record.vsd03.records[0]]
-}
-
 resource "aws_route53_record" "es01" {
   zone_id = aws_route53_zone.internalFQDN.zone_id
   name    = "es01.${var.internalFQDN}"
@@ -296,4 +288,3 @@ resource "aws_route53_record" "vsd3_ptr" {
   ttl     = var.internalDNSTTL
   records = [aws_route53_record.vsd03.fqdn]
 }
-
